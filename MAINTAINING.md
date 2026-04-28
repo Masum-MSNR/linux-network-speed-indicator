@@ -8,7 +8,8 @@ linux-network-speed-indicator/
 │   ├── applications/
 │   ├── autostart/
 │   ├── icons/
-│   └── metainfo/
+│   ├── metainfo/
+│   └── screenshots/
 ├── io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml
 ├── config/
 ├── scripts/
@@ -81,6 +82,13 @@ This creates:
 
 The Flatpak manifest lives at `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml`.
 
+AppStream screenshot assets are generated with:
+
+```bash
+./.venv/bin/pip install Pillow
+./.venv/bin/python scripts/render_appstream_screenshots.py
+```
+
 Flatpak-specific behavior:
 
 - the app now probes `/app/share/linux-network-speed-indicator/` for bundled icons and default config
@@ -115,11 +123,12 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 ## Linux Store Readiness
 
 - `assets/metainfo/linux-network-speed-indicator.metainfo.xml` provides AppStream metadata.
+- `assets/screenshots/` contains the AppStream screenshot assets referenced by the metainfo file.
 - The package installs a hicolor launcher icon and desktop entry for software center indexing.
 - This improves compatibility with GNOME Software, KDE Discover, Ubuntu App Center, and other AppStream-based Linux stores.
 - `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml` adds a repo-local Flatpak packaging path for Flathub-style builds.
 - Publishing into those stores still requires a compatible repository or additional package formats such as Snap, COPR, or AUR.
-- Flathub submission still needs store screenshots and any review-driven metadata cleanup.
+- Flathub submission may still need review-driven metadata cleanup after the repo screenshots are in place.
 
 ## Semantic Versioning
 

@@ -64,10 +64,11 @@ The project now ships the metadata expected by AppStream-based Linux software ce
 - desktop launcher metadata
 - application icon in the standard hicolor theme path
 - AppStream metainfo for store indexing
+- AppStream screenshot assets for software center listings
 
 That improves readiness for GNOME Software, KDE Discover, Ubuntu App Center, and other Linux app stores that consume AppStream data once the package is published in a compatible repository.
 
-The repository now also includes a Flatpak manifest for `io.github.MasumMSNR.LinuxNetworkSpeedIndicator`, which is the packaging base needed for Flathub review. Flathub submission still needs store screenshots and review-specific polish before it is ready to publish there.
+The repository now also includes a Flatpak manifest for `io.github.MasumMSNR.LinuxNetworkSpeedIndicator`, which is the packaging base needed for Flathub review. Flathub submission still may need review-specific polish, but the screenshot asset gap is now covered in the repo.
 
 ## Flatpak Build
 
