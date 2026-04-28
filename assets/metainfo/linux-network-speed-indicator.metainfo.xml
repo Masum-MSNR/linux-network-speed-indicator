@@ -19,11 +19,11 @@
   <screenshots>
     <screenshot type="default">
       <caption>See live download and upload speed directly in the top bar</caption>
-      <image type="source" width="1280" height="720">https://raw.githubusercontent.com/Masum-MSNR/linux-network-speed-indicator/main/assets/screenshots/overview.png</image>
+      <image type="source" width="1104" height="234">https://raw.githubusercontent.com/Masum-MSNR/linux-network-speed-indicator/main/assets/screenshots/overview.png</image>
     </screenshot>
     <screenshot>
       <caption>Change units, layout, refresh rate, and autostart from the indicator menu</caption>
-      <image type="source" width="1280" height="720">https://raw.githubusercontent.com/Masum-MSNR/linux-network-speed-indicator/main/assets/screenshots/menu.png</image>
+      <image type="source" width="675" height="852">https://raw.githubusercontent.com/Masum-MSNR/linux-network-speed-indicator/main/assets/screenshots/menu.png</image>
     </screenshot>
   </screenshots>
   <categories>

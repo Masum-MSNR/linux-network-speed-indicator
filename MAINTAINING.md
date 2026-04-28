@@ -89,6 +89,8 @@ AppStream screenshot assets are generated with:
 ./.venv/bin/python scripts/render_appstream_screenshots.py
 ```
 
+The generator uses the committed source captures in `assets/screenshots/reference/` and writes the publishable AppStream images to `assets/screenshots/`.
+
 Flatpak-specific behavior:
 
 - the app now probes `/app/share/linux-network-speed-indicator/` for bundled icons and default config
