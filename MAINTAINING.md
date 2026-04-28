@@ -5,6 +5,10 @@
 ```text
 linux-network-speed-indicator/
 ├── assets/
+│   ├── applications/
+│   ├── autostart/
+│   ├── icons/
+│   └── metainfo/
 ├── config/
 ├── scripts/
 ├── src/
@@ -42,6 +46,12 @@ This creates:
 
 - `dist/linux-network-speed-indicator_<version>_all.deb`
 
+The Debian package also installs:
+
+- a launcher in `/usr/share/applications/`
+- an AppStream file in `/usr/share/metainfo/`
+- a themed app icon in `/usr/share/icons/hicolor/scalable/apps/`
+
 ## Full Release Build
 
 ```bash
@@ -78,6 +88,13 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 
 - `ci.yml` validates Python, shell scripts, JSON, and Debian package creation.
 - `release.yml` runs only when `VERSION` changes on `main`, creates the matching Git tag, then publishes `.deb`, `.zip`, and `.tar.gz` artifacts.
+
+## Linux Store Readiness
+
+- `assets/metainfo/linux-network-speed-indicator.metainfo.xml` provides AppStream metadata.
+- The package installs a hicolor launcher icon and desktop entry for software center indexing.
+- This improves compatibility with GNOME Software, KDE Discover, Ubuntu App Center, and other AppStream-based Linux stores.
+- Publishing into those stores still requires a compatible repository or additional package formats such as Flatpak, Snap, COPR, or AUR.
 
 ## Semantic Versioning
 

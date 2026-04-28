@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.MasumMSNR.LinuxNetworkSpeedIndicator</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Linux Network Speed Indicator</name>
+  <summary>Top-bar and tray network speed monitor for Linux desktops</summary>
+  <developer id="io.github.masummsnr">
+    <name>Masum</name>
+  </developer>
+  <launchable type="desktop-id">linux-network-speed-indicator.desktop</launchable>
+  <provides>
+    <binary>linux-network-speed-indicator</binary>
+  </provides>
+  <description>
+    <p>Linux Network Speed Indicator is a lightweight network speed monitor for Ubuntu GNOME, Debian GNOME, and other Linux desktops that support AppIndicator or StatusNotifier items.</p>
+    <p>It shows live download and upload throughput in the top bar or tray, supports automatic or fixed units, allows split or single-direction display modes, and can start automatically on login.</p>
+  </description>
+  <categories>
+    <category>Network</category>
+  </categories>
+  <keywords>
+    <keyword>network</keyword>
+    <keyword>speed</keyword>
+    <keyword>bandwidth</keyword>
+    <keyword>internet</keyword>
+    <keyword>monitor</keyword>
+    <keyword>tray</keyword>
+  </keywords>
+  <url type="homepage">https://github.com/Masum-MSNR/linux-network-speed-indicator</url>
+  <url type="bugtracker">https://github.com/Masum-MSNR/linux-network-speed-indicator/issues</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.2" date="2026-04-29"/>
+  </releases>
+</component>

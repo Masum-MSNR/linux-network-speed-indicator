@@ -2,11 +2,11 @@
 Type=Application
 Version=1.0
 Name=Linux Network Speed Indicator
-Comment=Show live download and upload speeds in the top bar
+Comment=Live network speed monitor for the Linux top bar and tray
 Exec=__EXEC_PATH__
 TryExec=__EXEC_PATH__
 Terminal=false
 StartupNotify=false
-Icon=network-transmit-receive-symbolic
-Categories=Network;Utility;
-Keywords=network;speed;internet;bandwidth;indicator;
+Icon=linux-network-speed-indicator
+Categories=Network;
+Keywords=network;speed;internet;bandwidth;indicator;monitor;throughput;tray;

@@ -31,6 +31,7 @@ AUTOSTART_PATH = CONFIG_HOME / 'autostart' / f'{APP_ID}.desktop'
 SYSTEM_AUTOSTART_PATH = Path('/etc/xdg/autostart') / f'{APP_ID}.desktop'
 LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
 ICON_NAME = 'network-speed-indicator-empty'
+APP_ICON_NAME = 'linux-network-speed-indicator'
 
 PROJECT_ROOT = next(
     (
@@ -115,37 +116,21 @@ DEFAULT_CONFIG_SOURCE = first_existing_path(
 
 
 def render_autostart(enabled: bool) -> str:
+    exec_path = SCRIPT_PATH
     return f"""[Desktop Entry]
 Type=Application
 Version=1.0
 Name=Linux Network Speed Indicator
 Comment=Show live download and upload speeds in the top bar
-Exec={SCRIPT_PATH}
-TryExec={SCRIPT_PATH}
+Exec={exec_path}
+TryExec={exec_path}
 Terminal=false
 X-GNOME-Autostart-enabled={str(enabled).lower()}
 X-GNOME-Autostart-Delay=3
 OnlyShowIn=GNOME;Unity;
 StartupNotify=false
-Icon=network-transmit-receive-symbolic
-Categories=Utility;
-"""
-
-def render_autostart(enabled: bool) -> str:
-    return f"""[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Linux Network Speed Indicator
-Comment=Show live download and upload speeds in the top bar
-Exec={BIN_PATH}
-TryExec=/usr/bin/python3
-Terminal=false
-X-GNOME-Autostart-enabled={str(enabled).lower()}
-X-GNOME-Autostart-Delay=3
-OnlyShowIn=GNOME;Unity;
-StartupNotify=false
-Icon=network-transmit-receive-symbolic
-Categories=Utility;
+Icon={APP_ICON_NAME}
+Categories=Network;Utility;
 """
 
 
@@ -313,7 +298,7 @@ class NetworkSpeedIndicator:
         )
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_title(APP_TITLE)
-        if ICON_DIR.exists():
+        if ICON_DIR and ICON_DIR.exists():
             self.indicator.set_icon_theme_path(str(ICON_DIR))
             self.indicator.set_icon_full(indicator_icon, APP_TITLE)
         else:

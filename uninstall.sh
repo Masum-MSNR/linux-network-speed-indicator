@@ -6,6 +6,8 @@ EXEC_PATH="${HOME}/.local/bin/${PROJECT_SLUG}"
 DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
 SHARE_DIR="${DATA_HOME}/${PROJECT_SLUG}"
 APPLICATION_DESKTOP_PATH="${DATA_HOME}/applications/${PROJECT_SLUG}.desktop"
+APP_ICON_PATH="${DATA_HOME}/icons/hicolor/scalable/apps/${PROJECT_SLUG}.svg"
+METAINFO_PATH="${DATA_HOME}/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml"
 CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 CONFIG_DIR="${CONFIG_HOME}/${PROJECT_SLUG}"
 AUTOSTART_PATH="${CONFIG_HOME}/autostart/${PROJECT_SLUG}.desktop"
@@ -22,6 +24,8 @@ pkill -f "${EXEC_PATH}" >/dev/null 2>&1 || true
 rm -f "${EXEC_PATH}"
 rm -f "${AUTOSTART_PATH}"
 rm -f "${APPLICATION_DESKTOP_PATH}"
+rm -f "${APP_ICON_PATH}"
+rm -f "${METAINFO_PATH}"
 rm -rf "${SHARE_DIR}"
 
 if [ "${PURGE_CONFIG}" = true ]; then

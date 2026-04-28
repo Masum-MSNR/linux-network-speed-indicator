@@ -11,6 +11,10 @@ CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 CONFIG_DIR="${CONFIG_HOME}/${PROJECT_SLUG}"
 APPLICATIONS_DIR="${DATA_HOME}/applications"
 APPLICATION_DESKTOP_PATH="${APPLICATIONS_DIR}/${PROJECT_SLUG}.desktop"
+ICON_THEME_DIR="${DATA_HOME}/icons/hicolor/scalable/apps"
+APP_ICON_PATH="${ICON_THEME_DIR}/${PROJECT_SLUG}.svg"
+METAINFO_DIR="${DATA_HOME}/metainfo"
+METAINFO_PATH="${METAINFO_DIR}/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml"
 AUTOSTART_DIR="${CONFIG_HOME}/autostart"
 AUTOSTART_PATH="${AUTOSTART_DIR}/${PROJECT_SLUG}.desktop"
 
@@ -26,10 +30,19 @@ if ! /usr/bin/python3 -c "import gi; gi.require_version('Gtk', '3.0'); gi.requir
   exit 1
 fi
 
-mkdir -p "${BIN_DIR}" "${SHARE_DIR}/icons" "${CONFIG_DIR}" "${AUTOSTART_DIR}" "${APPLICATIONS_DIR}"
+mkdir -p \
+  "${BIN_DIR}" \
+  "${SHARE_DIR}/icons" \
+  "${CONFIG_DIR}" \
+  "${AUTOSTART_DIR}" \
+  "${APPLICATIONS_DIR}" \
+  "${ICON_THEME_DIR}" \
+  "${METAINFO_DIR}"
 
 install -m 0755 "${PROJECT_ROOT}/src/network_speed_indicator.py" "${EXEC_PATH}"
 install -m 0644 "${PROJECT_ROOT}/assets/icons/network-speed-indicator-empty.svg" "${SHARE_DIR}/icons/network-speed-indicator-empty.svg"
+install -m 0644 "${PROJECT_ROOT}/assets/icons/linux-network-speed-indicator.svg" "${APP_ICON_PATH}"
+install -m 0644 "${PROJECT_ROOT}/assets/metainfo/linux-network-speed-indicator.metainfo.xml" "${METAINFO_PATH}"
 install -m 0644 "${PROJECT_ROOT}/config/default-config.json" "${SHARE_DIR}/default-config.json"
 
 if [ ! -f "${CONFIG_DIR}/config.json" ]; then
@@ -51,6 +64,10 @@ if command -v desktop-file-validate >/dev/null 2>&1; then
   desktop-file-validate "${AUTOSTART_PATH}"
 fi
 
+if command -v appstreamcli >/dev/null 2>&1; then
+  appstreamcli validate --no-net "${METAINFO_PATH}"
+fi
+
 if [ -n "${DISPLAY:-}" ] && [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
   pkill -f "${EXEC_PATH}" >/dev/null 2>&1 || true
   setsid -f env \
@@ -66,3 +83,5 @@ echo "Binary: ${EXEC_PATH}"
 echo "Config: ${CONFIG_DIR}/config.json"
 echo "Launcher: ${APPLICATION_DESKTOP_PATH}"
 echo "Autostart: ${AUTOSTART_PATH}"
+echo "Icon: ${APP_ICON_PATH}"
+echo "AppStream: ${METAINFO_PATH}"

@@ -2,7 +2,7 @@
 Type=Application
 Version=1.0
 Name=Linux Network Speed Indicator
-Comment=Show live download and upload speeds in the top bar
+Comment=Live network speed monitor for the Linux top bar and tray
 Exec=__EXEC_PATH__
 TryExec=/usr/bin/python3
 Terminal=false
@@ -10,5 +10,5 @@ X-GNOME-Autostart-enabled=true
 X-GNOME-Autostart-Delay=3
 OnlyShowIn=GNOME;Unity;
 StartupNotify=false
-Icon=network-transmit-receive-symbolic
-Categories=Utility;
+Icon=linux-network-speed-indicator
+Categories=Network;

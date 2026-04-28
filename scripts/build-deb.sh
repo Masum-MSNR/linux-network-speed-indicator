@@ -13,6 +13,8 @@ rm -rf "${STAGING_DIR}" "${DEB_PATH}"
 mkdir -p \
   "${STAGING_DIR}/DEBIAN" \
   "${STAGING_DIR}/usr/bin" \
+  "${STAGING_DIR}/usr/share/icons/hicolor/scalable/apps" \
+  "${STAGING_DIR}/usr/share/metainfo" \
   "${STAGING_DIR}/usr/share/${PROJECT_SLUG}/icons" \
   "${STAGING_DIR}/usr/share/applications" \
   "${STAGING_DIR}/usr/share/doc/${PROJECT_SLUG}" \
@@ -22,6 +24,10 @@ install -m 0755 "${PROJECT_ROOT}/src/network_speed_indicator.py" \
   "${STAGING_DIR}/usr/bin/${PROJECT_SLUG}"
 install -m 0644 "${PROJECT_ROOT}/assets/icons/network-speed-indicator-empty.svg" \
   "${STAGING_DIR}/usr/share/${PROJECT_SLUG}/icons/network-speed-indicator-empty.svg"
+install -m 0644 "${PROJECT_ROOT}/assets/icons/linux-network-speed-indicator.svg" \
+  "${STAGING_DIR}/usr/share/icons/hicolor/scalable/apps/${PROJECT_SLUG}.svg"
+install -m 0644 "${PROJECT_ROOT}/assets/metainfo/linux-network-speed-indicator.metainfo.xml" \
+  "${STAGING_DIR}/usr/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml"
 install -m 0644 "${PROJECT_ROOT}/config/default-config.json" \
   "${STAGING_DIR}/usr/share/${PROJECT_SLUG}/default-config.json"
 install -m 0644 "${PROJECT_ROOT}/README.md" \
@@ -38,6 +44,15 @@ sed "s|__EXEC_PATH__|/usr/bin/${PROJECT_SLUG}|g" \
 sed "s|__EXEC_PATH__|/usr/bin/${PROJECT_SLUG}|g" \
   "${PROJECT_ROOT}/assets/autostart/linux-network-speed-indicator.desktop.in" \
   > "${STAGING_DIR}/etc/xdg/autostart/${PROJECT_SLUG}.desktop"
+
+if command -v desktop-file-validate >/dev/null 2>&1; then
+  desktop-file-validate "${STAGING_DIR}/usr/share/applications/${PROJECT_SLUG}.desktop"
+  desktop-file-validate "${STAGING_DIR}/etc/xdg/autostart/${PROJECT_SLUG}.desktop"
+fi
+
+if command -v appstreamcli >/dev/null 2>&1; then
+  appstreamcli validate --no-net "${STAGING_DIR}/usr/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml"
+fi
 
 cat > "${STAGING_DIR}/DEBIAN/control" <<EOF
 Package: ${PROJECT_SLUG}
@@ -63,6 +78,10 @@ if command -v update-desktop-database >/dev/null 2>&1; then
   update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
 fi
 
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  gtk-update-icon-cache -q /usr/share/icons/hicolor >/dev/null 2>&1 || true
+fi
+
 exit 0
 EOF
 
@@ -72,6 +91,10 @@ set -e
 
 if command -v update-desktop-database >/dev/null 2>&1; then
   update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
+
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  gtk-update-icon-cache -q /usr/share/icons/hicolor >/dev/null 2>&1 || true
 fi
 
 exit 0
