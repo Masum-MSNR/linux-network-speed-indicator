@@ -47,7 +47,7 @@ Priority: optional
 Architecture: ${ARCH}
 Maintainer: Masum
 Depends: python3, python3-gi, gir1.2-ayatanaappindicator3-0.1, libayatana-appindicator3-1
-Homepage: https://github.com/<your-github-username>/${PROJECT_SLUG}
+Homepage: https://github.com/Masum-MSNR/${PROJECT_SLUG}
 Description: Network speed indicator for Ubuntu GNOME and AppIndicator desktops
  Linux Network Speed Indicator is a lightweight top-bar and tray speed meter
  for Ubuntu GNOME and other Linux desktops that support AppIndicator or
