@@ -62,22 +62,22 @@ Recommended release flow:
 1. Update `VERSION`
 2. Update `CHANGELOG.md`
 3. Commit changes
-4. Create a tag like `v0.1.0`
-5. Push branch and tags
+4. Push `main`
 
 Example:
 
 ```bash
 git add .
-git commit -m "Release v0.1.0"
-git tag v0.1.0
-git push origin main --tags
+git commit -m "Release v0.1.1"
+git push origin main
 ```
+
+GitHub Actions creates the matching `v<version>` tag and publishes the release automatically.
 
 ## GitHub Actions
 
 - `ci.yml` validates Python, shell scripts, JSON, and Debian package creation.
-- `release.yml` builds `.deb`, `.zip`, and `.tar.gz` artifacts and publishes them on version tags.
+- `release.yml` runs only when `VERSION` changes on `main`, creates the matching Git tag, then publishes `.deb`, `.zip`, and `.tar.gz` artifacts.
 
 ## Semantic Versioning
 
