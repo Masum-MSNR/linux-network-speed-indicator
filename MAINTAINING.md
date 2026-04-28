@@ -85,11 +85,12 @@ The Flatpak manifest lives at `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.ya
 AppStream screenshot assets are generated with:
 
 ```bash
-./.venv/bin/pip install Pillow
-./.venv/bin/python scripts/render_appstream_screenshots.py
+cp /path/to/indicator-only-screenshot.png assets/screenshots/overview.png
+cp /path/to/menu-open-screenshot.png assets/screenshots/menu.png
 ```
 
-The generator uses the committed source captures in `assets/screenshots/reference/` and writes the publishable AppStream images to `assets/screenshots/`.
+The AppStream screenshots are committed directly in `assets/screenshots/`.
+When the UI changes, replace those two files with new real screenshots instead of regenerating them from a script.
 
 Flatpak-specific behavior:
 
