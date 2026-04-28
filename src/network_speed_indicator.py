@@ -21,8 +21,10 @@ from gi.repository import Gtk
 APP_ID = 'linux-network-speed-indicator'
 APP_TITLE = 'Linux Network Speed Indicator'
 SCRIPT_PATH = Path(__file__).resolve()
+IS_FLATPAK = Path('/.flatpak-info').exists() or 'FLATPAK_ID' in os.environ
 DATA_HOME = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local' / 'share')))
 USER_SHARE_DIR = DATA_HOME / APP_ID
+FLATPAK_SHARE_DIR = Path('/app/share') / APP_ID
 SYSTEM_SHARE_DIR = Path('/usr/share') / APP_ID
 CONFIG_HOME = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config')))
 CONFIG_DIR = CONFIG_HOME / APP_ID
@@ -32,6 +34,7 @@ SYSTEM_AUTOSTART_PATH = Path('/etc/xdg/autostart') / f'{APP_ID}.desktop'
 LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
 ICON_NAME = 'network-speed-indicator-empty'
 APP_ICON_NAME = 'linux-network-speed-indicator'
+AUTOSTART_SUPPORTED = not IS_FLATPAK
 
 PROJECT_ROOT = next(
     (
@@ -105,11 +108,13 @@ def first_existing_path(*candidates: Path | None) -> Path | None:
 
 ICON_DIR = first_existing_path(
     USER_SHARE_DIR / 'icons',
+    FLATPAK_SHARE_DIR / 'icons',
     SYSTEM_SHARE_DIR / 'icons',
     PROJECT_ICON_DIR,
 )
 DEFAULT_CONFIG_SOURCE = first_existing_path(
     USER_SHARE_DIR / 'default-config.json',
+    FLATPAK_SHARE_DIR / 'default-config.json',
     SYSTEM_SHARE_DIR / 'default-config.json',
     PROJECT_DEFAULT_CONFIG_PATH,
 )
@@ -215,11 +220,17 @@ def save_config(config: dict[str, object]) -> None:
 
 
 def write_autostart_file(enabled: bool) -> None:
+    if not AUTOSTART_SUPPORTED:
+        return
+
     AUTOSTART_PATH.parent.mkdir(parents=True, exist_ok=True)
     AUTOSTART_PATH.write_text(render_autostart(enabled), encoding='utf-8')
 
 
 def is_autostart_enabled() -> bool:
+    if not AUTOSTART_SUPPORTED:
+        return False
+
     try:
         content = AUTOSTART_PATH.read_text(encoding='utf-8')
     except FileNotFoundError:
@@ -381,9 +392,13 @@ class NetworkSpeedIndicator:
             self._on_refresh_interval_changed,
         )
 
-        start_on_login_item = Gtk.CheckMenuItem(label='Start on Login')
-        start_on_login_item.set_active(self.autostart_enabled)
-        start_on_login_item.connect('toggled', self._on_autostart_toggled)
+        if AUTOSTART_SUPPORTED:
+            start_on_login_item = Gtk.CheckMenuItem(label='Start on Login')
+            start_on_login_item.set_active(self.autostart_enabled)
+            start_on_login_item.connect('toggled', self._on_autostart_toggled)
+        else:
+            start_on_login_item = Gtk.MenuItem(label='Start on Login (not available in Flatpak)')
+            start_on_login_item.set_sensitive(False)
         start_on_login_item.show()
         menu.append(start_on_login_item)
 
@@ -478,7 +493,7 @@ def main() -> None:
     if lock_handle is None:
         return
 
-    if not AUTOSTART_PATH.exists() and not SYSTEM_AUTOSTART_PATH.exists():
+    if AUTOSTART_SUPPORTED and not AUTOSTART_PATH.exists() and not SYSTEM_AUTOSTART_PATH.exists():
         write_autostart_file(True)
 
     NetworkSpeedIndicator(lock_handle)

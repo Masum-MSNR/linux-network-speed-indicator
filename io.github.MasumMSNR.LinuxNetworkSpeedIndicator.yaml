@@ -1,0 +1,84 @@
+app-id: io.github.MasumMSNR.LinuxNetworkSpeedIndicator
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+branch: stable
+command: linux-network-speed-indicator
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --talk-name=org.kde.StatusNotifierWatcher
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/doc
+  - /share/gtk-doc
+  - /share/man
+  - '*.a'
+  - '*.la'
+
+modules:
+  - name: libdbusmenu
+    buildsystem: autotools
+    config-opts:
+      - --disable-static
+    sources:
+      - type: archive
+        url: http://archive.ubuntu.com/ubuntu/pool/main/libd/libdbusmenu/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
+        sha256: 41298b926573419f21864205317461750b833c596af6ab0bd206e13336f8cee3
+
+  - name: ayatana-ido
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DENABLE_TESTS=OFF
+      - -DENABLE_WERROR=OFF
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/ayatana-ido.git
+        commit: f968079b09e2310fefc3fc307359025f1c74b3eb
+
+  - name: libayatana-indicator
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DFLAVOUR_GTK3=ON
+      - -DENABLE_IDO=ON
+      - -DENABLE_LOADER=OFF
+      - -DENABLE_TESTS=OFF
+      - -DENABLE_WERROR=OFF
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+        commit: 611bb384b73fa6311777ba4c41381a06f5b99dad
+
+  - name: libayatana-appindicator
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DFLAVOUR_GTK3=ON
+      - -DENABLE_TESTS=OFF
+      - -DENABLE_WERROR=OFF
+      - -DENABLE_GTKDOC=OFF
+      - -DENABLE_BINDINGS_MONO=OFF
+      - -DENABLE_BINDINGS_VALA=OFF
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        commit: 31e8bb083b307e1cc96af4874a94707727bd1e79
+
+  - name: linux-network-speed-indicator
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 src/network_speed_indicator.py /app/bin/linux-network-speed-indicator
+      - install -Dm644 config/default-config.json /app/share/linux-network-speed-indicator/default-config.json
+      - install -Dm644 assets/icons/network-speed-indicator-empty.svg /app/share/linux-network-speed-indicator/icons/network-speed-indicator-empty.svg
+      - install -Dm644 assets/icons/linux-network-speed-indicator.svg /app/share/icons/hicolor/scalable/apps/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.svg
+      - sed -e 's|__EXEC_PATH__|linux-network-speed-indicator|g' -e 's|^Icon=.*|Icon=io.github.MasumMSNR.LinuxNetworkSpeedIndicator|' assets/applications/linux-network-speed-indicator.desktop.in > io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
+      - install -Dm644 io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop /app/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
+      - sed -e 's|linux-network-speed-indicator.desktop|io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop|g' assets/metainfo/linux-network-speed-indicator.metainfo.xml > io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml
+      - install -Dm644 io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml /app/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml
+    sources:
+      - type: dir
+        path: .

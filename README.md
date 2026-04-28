@@ -12,6 +12,7 @@ If you want a native-feeling Ubuntu or Linux bandwidth monitor without a heavy s
 - Persistent settings for units, display mode, and refresh rate
 - Autostart support for Ubuntu GNOME and other compatible Linux desktops
 - Debian package, desktop launcher, AppStream metadata, and MIT licensing
+- Flatpak manifest and local Flatpak build script for Flathub-style packaging work
 
 ## Supported Linux Desktops
 
@@ -66,7 +67,25 @@ The project now ships the metadata expected by AppStream-based Linux software ce
 
 That improves readiness for GNOME Software, KDE Discover, Ubuntu App Center, and other Linux app stores that consume AppStream data once the package is published in a compatible repository.
 
-For broader Linux distribution later, the next packaging targets would be Flatpak for Flathub, Snap for Snap Store, AUR for Arch Linux, or COPR for Fedora-based users.
+The repository now also includes a Flatpak manifest for `io.github.MasumMSNR.LinuxNetworkSpeedIndicator`, which is the packaging base needed for Flathub review. Flathub submission still needs store screenshots and review-specific polish before it is ready to publish there.
+
+## Flatpak Build
+
+To build a local Flatpak bundle from this repository:
+
+```bash
+./scripts/build-flatpak.sh
+flatpak install --user dist/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.flatpak
+flatpak run io.github.MasumMSNR.LinuxNetworkSpeedIndicator
+```
+
+Flatpak notes:
+
+- the Flatpak build shares the host network namespace so `/proc/net/dev` reflects real host traffic
+- the tray icon requests narrow access to `org.kde.StatusNotifierWatcher`
+- the autostart toggle is intentionally disabled inside Flatpak because sandboxed autostart entries do not control the host session
+
+For broader Linux distribution later, the next packaging targets after Flatpak would be Snap for Snap Store, AUR for Arch Linux, or COPR for Fedora-based users.
 
 ## Remove
 

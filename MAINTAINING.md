@@ -9,6 +9,7 @@ linux-network-speed-indicator/
 │   ├── autostart/
 │   ├── icons/
 │   └── metainfo/
+├── io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml
 ├── config/
 ├── scripts/
 ├── src/
@@ -65,6 +66,28 @@ This creates:
 - `dist/linux-network-speed-indicator-<version>.tar.gz`
 - `dist/linux-network-speed-indicator-<version>.zip`
 
+## Flatpak Build
+
+```bash
+chmod +x scripts/build-flatpak.sh
+./scripts/build-flatpak.sh
+```
+
+This creates:
+
+- `dist/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.flatpak`
+- `dist/flatpak-build/`
+- `dist/flatpak-repo/`
+
+The Flatpak manifest lives at `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml`.
+
+Flatpak-specific behavior:
+
+- the app now probes `/app/share/linux-network-speed-indicator/` for bundled icons and default config
+- Flatpak builds disable the autostart toggle because sandboxed autostart files do not affect the host desktop session
+- the manifest uses `--share=network` so `/proc/net/dev` reflects host traffic instead of only sandbox traffic
+- the tray icon only requests `org.kde.StatusNotifierWatcher` on the session bus
+
 ## Version Control Flow
 
 Recommended release flow:
@@ -94,7 +117,9 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 - `assets/metainfo/linux-network-speed-indicator.metainfo.xml` provides AppStream metadata.
 - The package installs a hicolor launcher icon and desktop entry for software center indexing.
 - This improves compatibility with GNOME Software, KDE Discover, Ubuntu App Center, and other AppStream-based Linux stores.
-- Publishing into those stores still requires a compatible repository or additional package formats such as Flatpak, Snap, COPR, or AUR.
+- `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml` adds a repo-local Flatpak packaging path for Flathub-style builds.
+- Publishing into those stores still requires a compatible repository or additional package formats such as Snap, COPR, or AUR.
+- Flathub submission still needs store screenshots and any review-driven metadata cleanup.
 
 ## Semantic Versioning
 

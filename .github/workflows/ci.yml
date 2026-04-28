@@ -30,6 +30,7 @@ jobs:
           bash -n install.sh
           bash -n uninstall.sh
           bash -n scripts/build-deb.sh
+          bash -n scripts/build-flatpak.sh
           bash -n scripts/build-release.sh
 
       - name: Validate JSON config
