@@ -14,6 +14,16 @@ If you want a native-feeling Ubuntu or Linux bandwidth monitor without a heavy s
 - Debian package, desktop launcher, AppStream metadata, and MIT licensing
 - Flatpak manifest and local Flatpak build script for Flathub-style packaging work
 
+## Screenshots
+
+### Indicator in Top Bar
+
+![Linux Network Speed Indicator overview](assets/screenshots/overview.png)
+
+### Indicator Menu
+
+![Linux Network Speed Indicator menu](assets/screenshots/menu.png)
+
 ## Supported Linux Desktops
 
 - Ubuntu GNOME 24.04 and newer
@@ -27,6 +37,8 @@ GNOME note:
 - Ubuntu already ships that by default through the Ubuntu AppIndicators extension.
 
 ## Download and Install
+
+Right now, the public download is GitHub Releases only. The project is not published on Flathub, Snap Store, AUR, COPR, or other Linux software stores yet.
 
 1. Open the GitHub Releases page for Linux Network Speed Indicator.
 2. Download the latest `.deb` file.
