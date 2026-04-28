@@ -24,10 +24,10 @@ def font(name: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
 
 FONT_SMALL = font('DejaVuSans.ttf', 20)
 FONT_BODY = font('DejaVuSans.ttf', 24)
-FONT_LABEL = font('DejaVuSans.ttf', 28)
-FONT_BOLD = font('DejaVuSans-Bold.ttf', 28)
+FONT_LABEL = font('DejaVuSans.ttf', 22)
+FONT_CHECK = font('DejaVuSans.ttf', 24)
 FONT_CLOCK = font('DejaVuSans-Bold.ttf', 22)
-FONT_CHEVRON = font('DejaVuSans.ttf', 22)
+FONT_CHEVRON = font('DejaVuSans.ttf', 20)
 
 
 def make_background() -> Image.Image:
@@ -91,25 +91,36 @@ def add_shadow(base: Image.Image, bounds: tuple[int, int, int, int], radius: int
     base.alpha_composite(shadow)
 
 
+def add_focus_glow(base: Image.Image, bounds: tuple[int, int, int, int], color: tuple[int, int, int, int]) -> None:
+    glow = Image.new('RGBA', base.size, (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow)
+    glow_draw.rounded_rectangle(bounds, radius=18, fill=color)
+    glow = glow.filter(ImageFilter.GaussianBlur(26))
+    base.alpha_composite(glow)
+
+
 def build_overview() -> Image.Image:
     image = make_background()
     draw_top_bar(image, '↓ 5.09 KB/s   ↑ 4.06 KB/s')
 
-    overlay = ImageDraw.Draw(image)
-    overlay.rounded_rectangle((54, 94, 610, 234), radius=24, fill=(20, 22, 28, 126))
-    overlay.text((86, 128), 'Linux Network Speed Indicator', font=FONT_BOLD, fill=(248, 249, 251, 255))
-    overlay.text((86, 170), 'See download and upload speed directly in the top bar.', font=FONT_BODY, fill=(225, 228, 235, 255))
+    add_focus_glow(image, (944, 4, 1220, 38), (98, 167, 255, 54))
+
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((52, 560, 498, 666), radius=18, fill=(18, 20, 26, 156))
+    draw.text((82, 588), 'Live speed in the top bar', font=FONT_BODY, fill=(242, 245, 250, 255))
+    draw.text((82, 625), 'Download and upload rates stay visible while you work.', font=FONT_SMALL, fill=(220, 224, 232, 255))
     return image.convert('RGB')
 
 
 def build_menu() -> Image.Image:
     image = make_background()
     draw_top_bar(image, '↓ 46.3 KB/s   ↑ 3.29 KB/s')
-    add_shadow(image, (884, 58, 1186, 470), radius=24)
+    add_focus_glow(image, (944, 4, 1220, 38), (98, 167, 255, 44))
+    add_shadow(image, (900, 72, 1170, 438), radius=22)
 
     draw = ImageDraw.Draw(image)
-    panel = (894, 68, 1180, 460)
-    draw.rounded_rectangle(panel, radius=24, fill=(52, 54, 63, 248))
+    panel = (908, 80, 1162, 430)
+    draw.rounded_rectangle(panel, radius=22, fill=(60, 63, 74, 248))
 
     rows = [
         ('Units', True, False),
@@ -119,24 +130,24 @@ def build_menu() -> Image.Image:
         ('Quit Speed Meter', False, False),
     ]
 
-    y = 116
+    y = 126
     for index, (label, has_chevron, checked) in enumerate(rows):
         if index == 4:
-            draw.line((924, y - 20, 1132, y - 20), fill=(111, 114, 126, 160), width=1)
-            y += 16
+            draw.line((936, y - 16, 1134, y - 16), fill=(122, 126, 139, 148), width=1)
+            y += 14
 
         if checked:
-            draw.text((930, y - 2), '✓', font=FONT_LABEL, fill=(244, 246, 249, 255))
-            text_x = 965
+            draw.text((934, y - 3), '✓', font=FONT_CHECK, fill=(244, 246, 249, 255))
+            text_x = 966
         else:
-            text_x = 936
+            text_x = 938
 
         draw.text((text_x, y), label, font=FONT_LABEL, fill=(248, 248, 251, 255))
 
         if has_chevron:
-            draw.text((1134, y + 5), '›', font=FONT_CHEVRON, fill=(221, 224, 231, 255))
+            draw.text((1128, y + 3), '›', font=FONT_CHEVRON, fill=(221, 224, 231, 255))
 
-        y += 67
+        y += 64
 
     return image.convert('RGB')
 
