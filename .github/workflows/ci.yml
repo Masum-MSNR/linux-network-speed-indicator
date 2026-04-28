@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate Python source
+        run: python -m py_compile src/network_speed_indicator.py
+
+      - name: Validate shell scripts
+        run: |
+          bash -n install.sh
+          bash -n uninstall.sh
+          bash -n scripts/build-deb.sh
+          bash -n scripts/build-release.sh
+
+      - name: Validate JSON config
+        run: python -m json.tool config/default-config.json > /dev/null
+
+      - name: Build Debian package
+        run: |
+          chmod +x scripts/build-deb.sh
+          ./scripts/build-deb.sh "$(cat VERSION)"
