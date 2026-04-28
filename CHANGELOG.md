@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.3] - 2026-04-29
+- Added the final real application screenshots to the README.
+- Replaced generated AppStream screenshot assets with the final approved images.
+- Removed the obsolete screenshot generator script and reference image workflow.
+
 ## [0.1.2] - 2026-04-29
 - Fixed the autostart override generator so the in-app toggle no longer writes a broken desktop entry.
 - Added AppStream metadata and a themed launcher icon for Linux software center readiness.
