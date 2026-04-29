@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.5] - 2026-04-29
+- Fixed GitHub Actions Flatpak dependency installation by using the user-scoped Flathub remote with host `flatpak-builder`.
+- Unblocked GitHub release publishing for the `.flatpak` bundle.
+
 ## [0.1.4] - 2026-04-29
 - Fixed the Flatpak build so the bundled Ayatana and libdbusmenu stack now builds successfully.
 - Added a GitHub release `.flatpak` bundle alongside the existing `.deb`, `.zip`, and `.tar.gz` assets.
