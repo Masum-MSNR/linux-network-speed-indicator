@@ -74,6 +74,7 @@ modules:
   - name: ayatana-ido
     buildsystem: cmake-ninja
     config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
       - -DENABLE_TESTS=OFF
       - -DENABLE_WERROR=OFF
     sources:
@@ -84,6 +85,7 @@ modules:
   - name: libayatana-indicator
     buildsystem: cmake-ninja
     config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
       - -DFLAVOUR_GTK3=ON
       - -DENABLE_IDO=ON
       - -DENABLE_LOADER=OFF
@@ -97,6 +99,7 @@ modules:
   - name: libayatana-appindicator
     buildsystem: cmake-ninja
     config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
       - -DFLAVOUR_GTK3=ON
       - -DENABLE_TESTS=OFF
       - -DENABLE_WERROR=OFF
