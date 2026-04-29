@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.6] - 2026-04-29
+- Fixed Flatpak CI builds by forcing the Ayatana CMake modules to install their libraries under `/app/lib` instead of `/app/lib64`.
+- Unblocked dependency discovery for `libayatana-indicator` and the GitHub-hosted `.flatpak` release pipeline.
+
 ## [0.1.5] - 2026-04-29
 - Fixed GitHub Actions Flatpak dependency installation by using the user-scoped Flathub remote with host `flatpak-builder`.
 - Unblocked GitHub release publishing for the `.flatpak` bundle.
