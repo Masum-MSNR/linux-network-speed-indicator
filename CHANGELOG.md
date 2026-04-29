@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.10] - 2026-04-29
+- Extracted the core network speed parsing, formatting, and config normalization logic into a GTK-free module with automated unit coverage.
+- Added shared project validation for local use, CI, and release automation, and expanded CI to exercise the Snap, release-archive, and Flatpak build paths before release.
+- Improved runtime diagnostics for config loading, autostart writes, and repeated update failures, and hardened Flatpak dependency sources to use reproducible archive URLs recognized by Flatpak Builder.
+
 ## [0.1.9] - 2026-04-29
 - Fixed the Snap launcher to start the app through the staged Python runtime, with a fallback for versioned `python3.x` interpreter paths inside the snap.
 - Switched the Snap desktop file to the packaged `meta/gui` icon path and simplified the Snap contact metadata to satisfy store validation more reliably.
