@@ -20,9 +20,14 @@ cp "${PROJECT_ROOT}/uninstall.sh" "${STAGING_DIR}/uninstall.sh"
 cp -R "${PROJECT_ROOT}/src" "${STAGING_DIR}/src"
 cp -R "${PROJECT_ROOT}/assets" "${STAGING_DIR}/assets"
 cp -R "${PROJECT_ROOT}/config" "${STAGING_DIR}/config"
+cp -R "${PROJECT_ROOT}/snap" "${STAGING_DIR}/snap"
 cp -R "${PROJECT_ROOT}/scripts" "${STAGING_DIR}/scripts"
 
-chmod +x "${STAGING_DIR}/install.sh" "${STAGING_DIR}/uninstall.sh" "${STAGING_DIR}/scripts/build-release.sh"
+chmod +x \
+  "${STAGING_DIR}/install.sh" \
+  "${STAGING_DIR}/uninstall.sh" \
+  "${STAGING_DIR}/scripts/build-release.sh" \
+  "${STAGING_DIR}/scripts/build-snap.sh"
 
 tar -C "${DIST_DIR}" -czf "${ARCHIVE_BASE}.tar.gz" "${PROJECT_SLUG}-${VERSION}"
 (

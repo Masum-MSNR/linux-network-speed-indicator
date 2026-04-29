@@ -1,0 +1,63 @@
+name: linux-network-speed-indicator
+base: core24
+adopt-info: linux-network-speed-indicator
+grade: stable
+confinement: strict
+license: MIT
+website: https://github.com/Masum-MSNR/linux-network-speed-indicator
+issues: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
+source-code: https://github.com/Masum-MSNR/linux-network-speed-indicator
+
+apps:
+  linux-network-speed-indicator:
+    command: usr/bin/python3 $SNAP/bin/network-speed-indicator
+    desktop: usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
+    common-id: io.github.MasumMSNR.LinuxNetworkSpeedIndicator
+    extensions:
+      - gnome
+    plugs:
+      - network-observe
+      - unity7
+
+parts:
+  linux-network-speed-indicator:
+    plugin: nil
+    source: .
+    override-pull: |
+      craftctl default
+      craftctl set version="$(tr -d '\n' < "$CRAFT_PROJECT_DIR/VERSION")"
+    override-build: |
+      install -d "$CRAFT_PART_INSTALL/bin"
+      install -d "$CRAFT_PART_INSTALL/usr/share/applications"
+      install -d "$CRAFT_PART_INSTALL/usr/share/doc/linux-network-speed-indicator"
+      install -d "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/scalable/apps"
+      install -d "$CRAFT_PART_INSTALL/usr/share/linux-network-speed-indicator/icons"
+      install -d "$CRAFT_PART_INSTALL/usr/share/metainfo"
+
+      install -m 0755 "$CRAFT_PROJECT_DIR/src/network_speed_indicator.py" \
+        "$CRAFT_PART_INSTALL/bin/network-speed-indicator"
+      install -m 0644 "$CRAFT_PROJECT_DIR/assets/icons/network-speed-indicator-empty.svg" \
+        "$CRAFT_PART_INSTALL/usr/share/linux-network-speed-indicator/icons/network-speed-indicator-empty.svg"
+      install -m 0644 "$CRAFT_PROJECT_DIR/assets/icons/linux-network-speed-indicator.svg" \
+        "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/scalable/apps/linux-network-speed-indicator.svg"
+      install -m 0644 "$CRAFT_PROJECT_DIR/assets/metainfo/linux-network-speed-indicator.metainfo.xml" \
+        "$CRAFT_PART_INSTALL/usr/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml"
+      install -m 0644 "$CRAFT_PROJECT_DIR/config/default-config.json" \
+        "$CRAFT_PART_INSTALL/usr/share/linux-network-speed-indicator/default-config.json"
+      install -m 0644 "$CRAFT_PROJECT_DIR/README.md" \
+        "$CRAFT_PART_INSTALL/usr/share/doc/linux-network-speed-indicator/README.md"
+      install -m 0644 "$CRAFT_PROJECT_DIR/CHANGELOG.md" \
+        "$CRAFT_PART_INSTALL/usr/share/doc/linux-network-speed-indicator/CHANGELOG.md"
+      install -m 0644 "$CRAFT_PROJECT_DIR/LICENSE" \
+        "$CRAFT_PART_INSTALL/usr/share/doc/linux-network-speed-indicator/LICENSE"
+
+      sed "s|__EXEC_PATH__|/snap/bin/linux-network-speed-indicator|g" \
+        "$CRAFT_PROJECT_DIR/assets/applications/linux-network-speed-indicator.desktop.in" \
+        > "$CRAFT_PART_INSTALL/usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop"
+    parse-info:
+      - usr/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml
+    stage-packages:
+      - gir1.2-ayatanaappindicator3-0.1
+      - libayatana-appindicator3-1
+      - python3
+      - python3-gi

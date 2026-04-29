@@ -22,9 +22,13 @@ APP_ID = 'linux-network-speed-indicator'
 APP_TITLE = 'Linux Network Speed Indicator'
 SCRIPT_PATH = Path(__file__).resolve()
 IS_FLATPAK = Path('/.flatpak-info').exists() or 'FLATPAK_ID' in os.environ
+IS_SNAP = 'SNAP' in os.environ
+IS_SANDBOXED = IS_FLATPAK or IS_SNAP
 DATA_HOME = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local' / 'share')))
 USER_SHARE_DIR = DATA_HOME / APP_ID
 FLATPAK_SHARE_DIR = Path('/app/share') / APP_ID
+SNAP_ROOT = Path(os.environ['SNAP']) if IS_SNAP else None
+SNAP_SHARE_DIR = SNAP_ROOT / 'usr' / 'share' / APP_ID if SNAP_ROOT else None
 SYSTEM_SHARE_DIR = Path('/usr/share') / APP_ID
 CONFIG_HOME = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config')))
 CONFIG_DIR = CONFIG_HOME / APP_ID
@@ -34,7 +38,7 @@ SYSTEM_AUTOSTART_PATH = Path('/etc/xdg/autostart') / f'{APP_ID}.desktop'
 LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
 ICON_NAME = 'network-speed-indicator-empty'
 APP_ICON_NAME = 'linux-network-speed-indicator'
-AUTOSTART_SUPPORTED = not IS_FLATPAK
+AUTOSTART_SUPPORTED = not IS_SANDBOXED
 
 PROJECT_ROOT = next(
     (
@@ -109,12 +113,14 @@ def first_existing_path(*candidates: Path | None) -> Path | None:
 ICON_DIR = first_existing_path(
     USER_SHARE_DIR / 'icons',
     FLATPAK_SHARE_DIR / 'icons',
+    SNAP_SHARE_DIR / 'icons',
     SYSTEM_SHARE_DIR / 'icons',
     PROJECT_ICON_DIR,
 )
 DEFAULT_CONFIG_SOURCE = first_existing_path(
     USER_SHARE_DIR / 'default-config.json',
     FLATPAK_SHARE_DIR / 'default-config.json',
+    SNAP_SHARE_DIR / 'default-config.json',
     SYSTEM_SHARE_DIR / 'default-config.json',
     PROJECT_DEFAULT_CONFIG_PATH,
 )
@@ -397,7 +403,9 @@ class NetworkSpeedIndicator:
             start_on_login_item.set_active(self.autostart_enabled)
             start_on_login_item.connect('toggled', self._on_autostart_toggled)
         else:
-            start_on_login_item = Gtk.MenuItem(label='Start on Login (not available in Flatpak)')
+            start_on_login_item = Gtk.MenuItem(
+                label='Start on Login (not available in sandboxed packages)'
+            )
             start_on_login_item.set_sensitive(False)
         start_on_login_item.show()
         menu.append(start_on_login_item)

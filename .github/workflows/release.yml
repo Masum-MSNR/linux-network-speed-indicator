@@ -76,16 +76,26 @@ jobs:
           bash -n uninstall.sh
           bash -n scripts/build-deb.sh
           bash -n scripts/build-flatpak.sh
+          bash -n scripts/build-snap.sh
           bash -n scripts/build-release.sh
+
+      - name: Build Snap bundle
+        id: snapcraft
+        uses: snapcore/action-build@v1
 
       - name: Build release archives
         run: |
-          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-release.sh
+          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh
           ./scripts/build-release.sh "$(cat VERSION)"
 
       - name: Build Flatpak bundle
         run: |
           ./scripts/build-flatpak.sh
+
+      - name: Collect Snap bundle
+        run: |
+          mkdir -p dist
+          cp "${{ steps.snapcraft.outputs.snap }}" dist/
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
@@ -97,5 +107,6 @@ jobs:
           files: |
             dist/*.deb
             dist/*.flatpak
+            dist/*.snap
             dist/*.zip
             dist/*.tar.gz

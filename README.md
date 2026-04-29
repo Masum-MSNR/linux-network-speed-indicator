@@ -13,6 +13,7 @@ If you want a native-feeling Ubuntu or Linux bandwidth monitor without a heavy s
 - Autostart support for Ubuntu GNOME and other compatible Linux desktops
 - Debian package, desktop launcher, AppStream metadata, and MIT licensing
 - Flatpak manifest and local Flatpak build script for Flathub-style packaging work
+- Snapcraft manifest and local Snap build script for GitHub-hosted or Snap Store packaging work
 
 ## Screenshots
 
@@ -39,6 +40,8 @@ GNOME note:
 ## Download and Install
 
 Right now, the public download is GitHub Releases only. The project is not published on Flathub, Snap Store, AUR, COPR, or other Linux software stores yet.
+
+The current `v0.1.6` release includes `.deb` and `.flatpak` assets. The repository now also includes Snap packaging, and the next versioned GitHub release will attach a `.snap` bundle.
 
 1. Open the GitHub Releases page for Linux Network Speed Indicator.
 2. Download either the latest `.deb` file or the `.flatpak` bundle.
@@ -89,6 +92,8 @@ That improves readiness for GNOME Software, KDE Discover, Ubuntu App Center, and
 
 The repository now also includes a Flatpak manifest for `io.github.MasumMSNR.LinuxNetworkSpeedIndicator`, which is the packaging base needed for Flathub review. Flathub submission still may need review-specific polish, but the screenshot asset gap is now covered in the repo.
 
+The repository now also includes a Snapcraft project under `snap/`, which is the packaging base needed for GitHub-hosted `.snap` artifacts and future Snap Store review.
+
 ## Flatpak Build
 
 To build a local Flatpak bundle from this repository:
@@ -105,7 +110,29 @@ Flatpak notes:
 - the tray icon requests narrow access to `org.kde.StatusNotifierWatcher`
 - the autostart toggle is intentionally disabled inside Flatpak because sandboxed autostart entries do not control the host session
 
-For broader Linux distribution later, the next packaging targets after Flatpak would be Snap for Snap Store, AUR for Arch Linux, or COPR for Fedora-based users.
+## Snap Build
+
+To build a local Snap from this repository:
+
+```bash
+./scripts/build-snap.sh
+sudo snap install --dangerous dist/linux-network-speed-indicator_<version>_amd64.snap
+```
+
+If your desktop does not auto-connect the network observation interface, connect it manually once:
+
+```bash
+sudo snap connect linux-network-speed-indicator:network-observe
+```
+
+Snap notes:
+
+- the Snap uses strict confinement and reads live counters through the `network-observe` interface
+- the app probes `$SNAP/usr/share/linux-network-speed-indicator/` for its bundled icons and default config
+- the autostart toggle is intentionally disabled inside Snap because sandboxed autostart entries do not control the host session
+- the project is Snap-ready in the repo and release workflow, but it is not published in the Snap Store yet
+
+For broader Linux distribution later, the next packaging targets after Flatpak and Snap would be AUR for Arch Linux or COPR for Fedora-based users.
 
 ## Remove
 

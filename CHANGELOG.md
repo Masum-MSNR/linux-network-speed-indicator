@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [Unreleased]
+- Added Snap packaging with `snap/snapcraft.yaml`, a local `scripts/build-snap.sh` helper, and Snap-aware asset lookup in the app runtime.
+- Updated release automation and documentation so the next versioned GitHub release can attach a `.snap` artifact alongside the existing `.deb`, `.flatpak`, `.zip`, and `.tar.gz` assets.
+
 ## [0.1.6] - 2026-04-29
 - Fixed Flatpak CI builds by forcing the Ayatana CMake modules to install their libraries under `/app/lib` instead of `/app/lib64`.
 - Unblocked dependency discovery for `libayatana-indicator` and the GitHub-hosted `.flatpak` release pipeline.
