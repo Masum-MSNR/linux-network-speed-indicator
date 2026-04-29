@@ -33,7 +33,7 @@ cd "${REPO_ROOT}"
 
 mkdir -p "$(dirname "${BUILD_DIR}")" "$(dirname "${REPO_DIR}")" "$(dirname "${BUNDLE_PATH}")"
 
-if ! flatpak remote-info flathub org.gnome.Platform//50 >/dev/null 2>&1; then
+if ! flatpak remote-info --user flathub org.gnome.Platform//50 >/dev/null 2>&1; then
   flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 fi
 
@@ -41,6 +41,7 @@ rm -rf "${BUILD_DIR}" "${REPO_DIR}" "${BUNDLE_PATH}"
 
 if [ "${BUILDER_MODE}" = "host" ]; then
   "${FLATPAK_BUILDER[@]}" \
+    --user \
     --disable-rofiles-fuse \
     --force-clean \
     --repo="${REPO_DIR}" \
