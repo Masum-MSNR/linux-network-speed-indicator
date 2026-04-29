@@ -4,13 +4,16 @@ adopt-info: linux-network-speed-indicator
 grade: stable
 confinement: strict
 license: MIT
+icon: assets/icons/linux-network-speed-indicator.svg
 website: https://github.com/Masum-MSNR/linux-network-speed-indicator
+contact:
+  - https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 issues: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 source-code: https://github.com/Masum-MSNR/linux-network-speed-indicator
 
 apps:
   linux-network-speed-indicator:
-    command: usr/bin/python3 $SNAP/bin/network-speed-indicator
+    command: bin/network-speed-indicator
     desktop: usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
     common-id: io.github.MasumMSNR.LinuxNetworkSpeedIndicator
     extensions:
@@ -51,7 +54,9 @@ parts:
       install -m 0644 "$CRAFT_PROJECT_DIR/LICENSE" \
         "$CRAFT_PART_INSTALL/usr/share/doc/linux-network-speed-indicator/LICENSE"
 
-      sed "s|__EXEC_PATH__|/snap/bin/linux-network-speed-indicator|g" \
+      sed \
+        -e "s|__EXEC_PATH__|/snap/bin/linux-network-speed-indicator|g" \
+        -e 's|^Icon=.*$|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/linux-network-speed-indicator.svg|' \
         "$CRAFT_PROJECT_DIR/assets/applications/linux-network-speed-indicator.desktop.in" \
         > "$CRAFT_PART_INSTALL/usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop"
     parse-info:

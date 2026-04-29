@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.8] - 2026-04-29
+- Fixed Snap packaging so the app launches from the installed script path instead of a missing `usr/bin/python3` entry.
+- Fixed the Snap desktop launcher to use an explicit in-snap icon path and added Snap contact/icon metadata for store validation.
+
 ## [0.1.7] - 2026-04-29
 - Added Snap packaging with `snap/snapcraft.yaml`, a local `scripts/build-snap.sh` helper, and Snap-aware asset lookup in the app runtime.
 - Updated release automation and documentation so versioned GitHub releases now attach a `.snap` artifact alongside the existing `.deb`, `.flatpak`, `.zip`, and `.tar.gz` assets.
