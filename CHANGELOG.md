@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.9] - 2026-04-29
+- Fixed the Snap launcher to start the app through the staged Python runtime, with a fallback for versioned `python3.x` interpreter paths inside the snap.
+- Switched the Snap desktop file to the packaged `meta/gui` icon path and simplified the Snap contact metadata to satisfy store validation more reliably.
+- Delayed release tag creation until after the Snap build and store publish steps succeed so failed runs do not leave orphaned version tags behind.
+
 ## [0.1.8] - 2026-04-29
 - Fixed Snap packaging so the app launches from the installed script path instead of a missing `usr/bin/python3` entry.
 - Fixed the Snap desktop launcher to use an explicit in-snap icon path and added Snap contact/icon metadata for store validation.

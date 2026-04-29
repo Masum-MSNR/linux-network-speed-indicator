@@ -45,30 +45,6 @@ jobs:
         run: |
           printf '%s' "${VERSION}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
 
-      - name: Create or reuse release tag
-        env:
-          VERSION: ${{ steps.version.outputs.value }}
-        run: |
-          TAG="v${VERSION}"
-          git fetch --tags --force
-
-          if git rev-parse "${TAG}" >/dev/null 2>&1; then
-            EXISTING_SHA="$(git rev-list -n 1 "${TAG}")"
-
-            if [ "${EXISTING_SHA}" != "${GITHUB_SHA}" ]; then
-              echo "${TAG} already exists on ${EXISTING_SHA}, not ${GITHUB_SHA}." >&2
-              exit 1
-            fi
-
-            echo "Reusing existing ${TAG} on ${GITHUB_SHA}."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "${TAG}" -m "Release ${TAG}" "${GITHUB_SHA}"
-          git push origin "${TAG}"
-
       - name: Validate project
         run: |
           python -m py_compile src/network_speed_indicator.py
@@ -104,6 +80,30 @@ jobs:
         with:
           snap: ${{ steps.snapcraft.outputs.snap }}
           release: stable
+
+      - name: Create or reuse release tag
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          TAG="v${VERSION}"
+          git fetch --tags --force
+
+          if git rev-parse "${TAG}" >/dev/null 2>&1; then
+            EXISTING_SHA="$(git rev-list -n 1 "${TAG}")"
+
+            if [ "${EXISTING_SHA}" != "${GITHUB_SHA}" ]; then
+              echo "${TAG} already exists on ${EXISTING_SHA}, not ${GITHUB_SHA}." >&2
+              exit 1
+            fi
+
+            echo "Reusing existing ${TAG} on ${GITHUB_SHA}."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${TAG}" -m "Release ${TAG}" "${GITHUB_SHA}"
+          git push origin "${TAG}"
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2

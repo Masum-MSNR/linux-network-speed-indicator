@@ -6,14 +6,13 @@ confinement: strict
 license: MIT
 icon: assets/icons/linux-network-speed-indicator.svg
 website: https://github.com/Masum-MSNR/linux-network-speed-indicator
-contact:
-  - https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
+contact: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 issues: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 source-code: https://github.com/Masum-MSNR/linux-network-speed-indicator
 
 apps:
   linux-network-speed-indicator:
-    command: bin/network-speed-indicator
+    command: bin/run-network-speed-indicator
     desktop: usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
     common-id: io.github.MasumMSNR.LinuxNetworkSpeedIndicator
     extensions:
@@ -38,7 +37,30 @@ parts:
       install -d "$CRAFT_PART_INSTALL/usr/share/metainfo"
 
       install -m 0755 "$CRAFT_PROJECT_DIR/src/network_speed_indicator.py" \
-        "$CRAFT_PART_INSTALL/bin/network-speed-indicator"
+        "$CRAFT_PART_INSTALL/bin/network-speed-indicator.py"
+
+      printf '%s\n' \
+        '#!/bin/sh' \
+        'python_bin="$SNAP/usr/bin/python3"' \
+        '' \
+        'if [ ! -x "$python_bin" ]; then' \
+        '  for candidate in "$SNAP"/usr/bin/python3.*; do' \
+        '    if [ -x "$candidate" ]; then' \
+        '      python_bin="$candidate"' \
+        '      break' \
+        '    fi' \
+        '  done' \
+        'fi' \
+        '' \
+        'if [ ! -x "$python_bin" ]; then' \
+        '  echo "Python runtime not found inside snap." >&2' \
+        '  exit 127' \
+        'fi' \
+        '' \
+        'exec "$python_bin" "$SNAP/bin/network-speed-indicator.py" "$@"' \
+        > "$CRAFT_PART_INSTALL/bin/run-network-speed-indicator"
+      chmod 0755 "$CRAFT_PART_INSTALL/bin/run-network-speed-indicator"
+
       install -m 0644 "$CRAFT_PROJECT_DIR/assets/icons/network-speed-indicator-empty.svg" \
         "$CRAFT_PART_INSTALL/usr/share/linux-network-speed-indicator/icons/network-speed-indicator-empty.svg"
       install -m 0644 "$CRAFT_PROJECT_DIR/assets/icons/linux-network-speed-indicator.svg" \
@@ -56,7 +78,7 @@ parts:
 
       sed \
         -e "s|__EXEC_PATH__|/snap/bin/linux-network-speed-indicator|g" \
-        -e 's|^Icon=.*$|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/linux-network-speed-indicator.svg|' \
+        -e 's|^Icon=.*$|Icon=${SNAP}/meta/gui/icon.svg|' \
         "$CRAFT_PROJECT_DIR/assets/applications/linux-network-speed-indicator.desktop.in" \
         > "$CRAFT_PART_INSTALL/usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop"
     parse-info:
