@@ -22,14 +22,54 @@ cleanup:
   - '*.la'
 
 modules:
+  - name: intltool
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+
+  - name: gtk-doc
+    buildsystem: meson
+    config-opts:
+      - -Dautotools_support=true
+      - -Dcmake_support=false
+      - -Dyelp_manual=false
+      - -Dtests=false
+    sources:
+      - type: archive
+        url: https://download.gnome.org/sources/gtk-doc/1.34/gtk-doc-1.34.0.tar.xz
+        sha256: b20b72b32a80bc18c7f975c9d4c16460c2276566a0b50f87d6852dff3aa7861c
+
   - name: libdbusmenu
     buildsystem: autotools
     config-opts:
       - --disable-static
+      - --disable-gtk-doc
+      - --disable-dumper
+      - --disable-vala
+      - --disable-introspection
     sources:
       - type: archive
         url: http://archive.ubuntu.com/ubuntu/pool/main/libd/libdbusmenu/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
         sha256: 41298b926573419f21864205317461750b833c596af6ab0bd206e13336f8cee3
+      - type: shell
+        commands:
+          - |
+            cat > autogen.sh <<'EOF'
+            #!/bin/sh
+            set -e
+            intltoolize --force --copy --automake
+            gtkdocize --copy
+            autoreconf -fiv
+
+            if [ -n "$NOCONFIGURE" ]; then
+              exit 0
+            fi
+
+            exec ./configure "$@"
+            EOF
+            chmod +x autogen.sh
 
   - name: ayatana-ido
     buildsystem: cmake-ninja

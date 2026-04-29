@@ -41,14 +41,21 @@ GNOME note:
 Right now, the public download is GitHub Releases only. The project is not published on Flathub, Snap Store, AUR, COPR, or other Linux software stores yet.
 
 1. Open the GitHub Releases page for Linux Network Speed Indicator.
-2. Download the latest `.deb` file.
-3. Install it with:
+2. Download either the latest `.deb` file or the `.flatpak` bundle.
+3. Install the `.deb` with:
 
 ```bash
 sudo apt install ./linux-network-speed-indicator_<version>_all.deb
 ```
 
 `apt` is the recommended install method because it resolves the required dependencies automatically.
+
+4. Or install the `.flatpak` bundle with:
+
+```bash
+flatpak install --user ./io.github.MasumMSNR.LinuxNetworkSpeedIndicator.flatpak
+flatpak run io.github.MasumMSNR.LinuxNetworkSpeedIndicator
+```
 
 ## After Install
 

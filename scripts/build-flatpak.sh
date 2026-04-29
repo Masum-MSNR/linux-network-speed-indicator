@@ -14,9 +14,15 @@ if ! command -v flatpak >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v flatpak-builder >/dev/null 2>&1; then
+if command -v flatpak-builder >/dev/null 2>&1; then
+  BUILDER_MODE="host"
+  FLATPAK_BUILDER=(flatpak-builder)
+elif flatpak info --user org.flatpak.Builder >/dev/null 2>&1 || flatpak info org.flatpak.Builder >/dev/null 2>&1; then
+  BUILDER_MODE="runtime"
+  FLATPAK_BUILDER=(flatpak run --command=flathub-build org.flatpak.Builder)
+else
   echo "flatpak-builder is required" >&2
-  echo "Install it with your distro package manager and rerun this script." >&2
+  echo "Install it with your distro package manager or run: flatpak install --user flathub org.flatpak.Builder" >&2
   exit 1
 fi
 
@@ -31,12 +37,32 @@ if ! flatpak remote-info flathub org.gnome.Platform//50 >/dev/null 2>&1; then
   flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 fi
 
-flatpak-builder \
-  --force-clean \
-  --repo="${REPO_DIR}" \
-  --install-deps-from=flathub \
-  "${BUILD_DIR}" \
-  "${MANIFEST}"
+rm -rf "${BUILD_DIR}" "${REPO_DIR}" "${BUNDLE_PATH}"
+
+if [ "${BUILDER_MODE}" = "host" ]; then
+  "${FLATPAK_BUILDER[@]}" \
+    --disable-rofiles-fuse \
+    --force-clean \
+    --repo="${REPO_DIR}" \
+    --install-deps-from=flathub \
+    "${BUILD_DIR}" \
+    "${MANIFEST}"
+else
+  WORK_DIR="$(mktemp -d)"
+  trap 'rm -rf "${WORK_DIR}"' EXIT
+
+  flatpak run \
+    --cwd="${WORK_DIR}" \
+    --filesystem="${WORK_DIR}" \
+    --filesystem="${REPO_ROOT}:ro" \
+    --command=flathub-build \
+    org.flatpak.Builder \
+    --disable-rofiles-fuse \
+    "${REPO_ROOT}/${MANIFEST}"
+
+  mv "${WORK_DIR}/builddir" "${BUILD_DIR}"
+  mv "${WORK_DIR}/repo" "${REPO_DIR}"
+fi
 
 flatpak build-bundle "${REPO_DIR}" "${BUNDLE_PATH}" "${APP_ID}" "${BRANCH}"
 

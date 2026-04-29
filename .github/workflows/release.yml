@@ -28,10 +28,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install zip
+      - name: Install release dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y zip
+          sudo apt-get install -y flatpak flatpak-builder zip
 
       - name: Resolve version
         id: version
@@ -75,12 +75,17 @@ jobs:
           bash -n install.sh
           bash -n uninstall.sh
           bash -n scripts/build-deb.sh
+          bash -n scripts/build-flatpak.sh
           bash -n scripts/build-release.sh
 
       - name: Build release archives
         run: |
-          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-release.sh
+          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-release.sh
           ./scripts/build-release.sh "$(cat VERSION)"
+
+      - name: Build Flatpak bundle
+        run: |
+          ./scripts/build-flatpak.sh
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
@@ -91,5 +96,6 @@ jobs:
           generate_release_notes: true
           files: |
             dist/*.deb
+            dist/*.flatpak
             dist/*.zip
             dist/*.tar.gz
