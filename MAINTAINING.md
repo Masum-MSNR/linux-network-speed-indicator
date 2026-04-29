@@ -156,7 +156,8 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 
 - `scripts/validate-project.sh` is the shared validation entrypoint for local checks and the pipeline workflow; it runs Python compilation, unit tests, shell syntax checks, JSON validation, and AppStream validation when available.
 - `ci.yml` is now the single pipeline workflow: it always validates and builds on pushes to `main` plus pull requests, and it only runs the release job after validation succeeds on a push to `main` where `VERSION` changed.
-- The release job inside `ci.yml` installs `pymacaroons` for listing auth, builds and publishes the Snap first, syncs the Snap Store screenshots/category, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
+- The release path in `ci.yml` now builds Snap artifacts for both `amd64` and `arm64` on native GitHub-hosted runners, and only publishes them to the Snap Store after both architecture builds succeed.
+- The final release job inside `ci.yml` installs Snapcraft plus `pymacaroons`, publishes the built Snap artifacts, syncs the Snap Store screenshots/category, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
 
 ## Linux Store Readiness
 

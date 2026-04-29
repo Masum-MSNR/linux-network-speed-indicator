@@ -71,6 +71,8 @@ jobs:
       - name: Build Snap bundle
         id: snapcraft
         uses: snapcore/action-build@v1
+        with:
+          snapcraft-args: --platform amd64
 
       - name: Build release archives
         run: |
@@ -85,6 +87,40 @@ jobs:
     needs:
       - detect-release
       - validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.detect-release.outputs.version_changed == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: amd64
+            runner: ubuntu-latest
+          - architecture: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build Snap bundle
+        id: snapcraft
+        uses: snapcore/action-build@v1
+        with:
+          snapcraft-args: --platform ${{ matrix.architecture }}
+
+      - name: Upload Snap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap-${{ matrix.architecture }}
+          path: ${{ steps.snapcraft.outputs.snap }}
+
+  finalize-release:
+    needs:
+      - detect-release
+      - validate
+      - build-and-release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.detect-release.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
 
@@ -117,10 +153,6 @@ jobs:
         run: |
           printf '%s' "${VERSION}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
 
-      - name: Build Snap bundle
-        id: snapcraft
-        uses: snapcore/action-build@v1
-
       - name: Build release archives
         run: |
           chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh scripts/validate-project.sh
@@ -130,18 +162,31 @@ jobs:
         run: |
           ./scripts/build-flatpak.sh
 
-      - name: Collect Snap bundle
-        run: |
-          mkdir -p dist
-          cp "${{ steps.snapcraft.outputs.snap }}" dist/
+      - name: Download Snap artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: snap-*
+          path: dist
+          merge-multiple: true
 
-      - name: Publish Snap to Snap Store
-        uses: snapcore/action-publish@v1
+      - name: Install Snapcraft
+        run: |
+          if ! command -v snapcraft >/dev/null 2>&1 && [ ! -x /snap/bin/snapcraft ]; then
+            sudo snap install --classic snapcraft
+          fi
+
+      - name: Publish Snap revisions to Snap Store
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
-        with:
-          snap: ${{ steps.snapcraft.outputs.snap }}
-          release: stable
+        run: |
+          snapcraft_bin="$(command -v snapcraft || true)"
+          if [ -z "${snapcraft_bin}" ]; then
+            snapcraft_bin=/snap/bin/snapcraft
+          fi
+
+          for snap_file in dist/*.snap; do
+            "${snapcraft_bin}" upload --release stable "${snap_file}"
+          done
 
       - name: Sync Snap Store listing
         env:

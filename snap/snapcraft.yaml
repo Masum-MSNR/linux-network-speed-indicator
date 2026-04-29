@@ -10,6 +10,18 @@ contact: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 issues: https://github.com/Masum-MSNR/linux-network-speed-indicator/issues
 source-code: https://github.com/Masum-MSNR/linux-network-speed-indicator
 
+platforms:
+  amd64:
+    build-on:
+      - amd64
+    build-for:
+      - amd64
+  arm64:
+    build-on:
+      - arm64
+    build-for:
+      - arm64
+
 apps:
   linux-network-speed-indicator:
     command: bin/run-network-speed-indicator
