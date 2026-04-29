@@ -130,6 +130,7 @@ Snap-specific behavior:
 - the app now probes `$SNAP/usr/share/linux-network-speed-indicator/` for bundled icons and default config
 - Snap builds disable the autostart toggle because sandboxed autostart files do not affect the host desktop session
 - the Snap uses strict confinement and requests `network-observe` for `/proc/net/dev` access
+- Snap Store screenshots and the Snap Store category are separate store-listing metadata and are not imported from AppStream `parse-info`
 
 ## Version Control Flow
 
@@ -153,7 +154,7 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 ## GitHub Actions
 
 - `ci.yml` validates Python, shell scripts, JSON, and Debian package creation.
-- `release.yml` runs only when `VERSION` changes on `main`, creates the matching Git tag, then publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
+- `release.yml` runs only when `VERSION` changes on `main`, builds and publishes the Snap first, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
 
 ## Linux Store Readiness
 
@@ -162,7 +163,9 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 - The package installs a hicolor launcher icon and desktop entry for software center indexing.
 - This improves compatibility with GNOME Software, KDE Discover, Ubuntu App Center, and other AppStream-based Linux stores.
 - `io.github.MasumMSNR.LinuxNetworkSpeedIndicator.yaml` adds a repo-local Flatpak packaging path for Flathub-style builds.
-- `snap/snapcraft.yaml` adds a repo-local Snap packaging path for GitHub-hosted `.snap` builds and future Snap Store publication.
+- `snap/snapcraft.yaml` adds a repo-local Snap packaging path for GitHub-hosted `.snap` builds and Snap Store publication.
+- Snap Store screenshots and the Snap Store category are managed separately in the Snap Store listing or Dashboard API.
+- The intended Snap Store category for this app is `Utilities`, and the listing screenshots should use `assets/screenshots/overview.png` and `assets/screenshots/menu.png`.
 - Publishing into those stores still requires a compatible repository or additional package formats such as COPR or AUR.
 - Flathub submission may still need review-driven metadata cleanup after the repo screenshots are in place.
 

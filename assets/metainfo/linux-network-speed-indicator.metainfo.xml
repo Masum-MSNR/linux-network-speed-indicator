@@ -28,6 +28,7 @@
   </screenshots>
   <categories>
     <category>Network</category>
+    <category>Utility</category>
   </categories>
   <keywords>
     <keyword>network</keyword>
@@ -36,6 +37,7 @@
     <keyword>internet</keyword>
     <keyword>monitor</keyword>
     <keyword>tray</keyword>
+    <keyword>indicator</keyword>
   </keywords>
   <url type="homepage">https://github.com/Masum-MSNR/linux-network-speed-indicator</url>
   <url type="bugtracker">https://github.com/Masum-MSNR/linux-network-speed-indicator/issues</url>

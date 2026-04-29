@@ -39,12 +39,10 @@ GNOME note:
 
 ## Download and Install
 
-Right now, the public download is GitHub Releases only. The project is not published on Flathub, Snap Store, AUR, COPR, or other Linux software stores yet.
-
-The current `v0.1.6` release includes `.deb` and `.flatpak` assets. The repository now also includes Snap packaging, and the next versioned GitHub release will attach a `.snap` bundle.
+Public downloads are available on GitHub Releases, and the Snap package is now published in the Snap Store.
 
 1. Open the GitHub Releases page for Linux Network Speed Indicator.
-2. Download either the latest `.deb` file or the `.flatpak` bundle.
+2. Download either the latest `.deb`, `.flatpak`, or `.snap` file.
 3. Install the `.deb` with:
 
 ```bash
@@ -58,6 +56,12 @@ sudo apt install ./linux-network-speed-indicator_<version>_all.deb
 ```bash
 flatpak install --user ./io.github.MasumMSNR.LinuxNetworkSpeedIndicator.flatpak
 flatpak run io.github.MasumMSNR.LinuxNetworkSpeedIndicator
+```
+
+5. Or install the published Snap directly from the Snap Store with:
+
+```bash
+sudo snap install linux-network-speed-indicator
 ```
 
 ## After Install
@@ -93,6 +97,8 @@ That improves readiness for GNOME Software, KDE Discover, Ubuntu App Center, and
 The repository now also includes a Flatpak manifest for `io.github.MasumMSNR.LinuxNetworkSpeedIndicator`, which is the packaging base needed for Flathub review. Flathub submission still may need review-specific polish, but the screenshot asset gap is now covered in the repo.
 
 The repository now also includes a Snapcraft project under `snap/`, which is the packaging base needed for GitHub-hosted `.snap` artifacts and future Snap Store review.
+
+The published Snap Store page now receives the app title, summary, description, icon, contact, and source links from the packaged metadata. Snap Store screenshots and the store category are separate listing metadata and must be managed in the Snap Store listing itself rather than through AppStream `parse-info`.
 
 ## Flatpak Build
 
@@ -130,7 +136,8 @@ Snap notes:
 - the Snap uses strict confinement and reads live counters through the `network-observe` interface
 - the app probes `$SNAP/usr/share/linux-network-speed-indicator/` for its bundled icons and default config
 - the autostart toggle is intentionally disabled inside Snap because sandboxed autostart entries do not control the host session
-- the project is Snap-ready in the repo and release workflow, but it is not published in the Snap Store yet
+- the app is published in the Snap Store as `linux-network-speed-indicator`
+- Snap Store screenshots and the Snap Store category are controlled separately from the packaged snap metadata
 
 For broader Linux distribution later, the next packaging targets after Flatpak and Snap would be AUR for Arch Linux or COPR for Fedora-based users.
 
