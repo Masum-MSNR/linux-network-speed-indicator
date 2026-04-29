@@ -19,7 +19,7 @@ find "${PROJECT_ROOT}" -maxdepth 1 -type f -name "${PROJECT_SLUG}_*.snap" -print
 
 (
   cd "${PROJECT_ROOT}"
-  snapcraft "$@"
+  snapcraft pack --destructive-mode --output "${PROJECT_ROOT}" "$@"
 )
 
 new_snap="$(comm -13 "${before_list}" <(

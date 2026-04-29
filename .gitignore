@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.log
+exported.txt
 *.zip
 *.tar.gz
 dist/

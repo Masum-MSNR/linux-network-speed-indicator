@@ -97,6 +97,14 @@ jobs:
           mkdir -p dist
           cp "${{ steps.snapcraft.outputs.snap }}" dist/
 
+      - name: Publish Snap to Snap Store
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snap: ${{ steps.snapcraft.outputs.snap }}
+          release: stable
+
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
