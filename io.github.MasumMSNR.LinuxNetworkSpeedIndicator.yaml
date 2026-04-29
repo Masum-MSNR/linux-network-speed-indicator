@@ -51,7 +51,7 @@ modules:
       - --disable-introspection
     sources:
       - type: archive
-        url: http://archive.ubuntu.com/ubuntu/pool/main/libd/libdbusmenu/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
+        url: https://archive.ubuntu.com/ubuntu/pool/main/libd/libdbusmenu/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
         sha256: 41298b926573419f21864205317461750b833c596af6ab0bd206e13336f8cee3
       - type: shell
         commands:
@@ -78,9 +78,9 @@ modules:
       - -DENABLE_TESTS=OFF
       - -DENABLE_WERROR=OFF
     sources:
-      - type: git
-        url: https://github.com/AyatanaIndicators/ayatana-ido.git
-        commit: f968079b09e2310fefc3fc307359025f1c74b3eb
+      - type: archive
+        url: https://codeload.github.com/AyatanaIndicators/ayatana-ido/tar.gz/f968079b09e2310fefc3fc307359025f1c74b3eb
+        sha256: 8fcf60dcf6d22f9391367a1cf8dfc3b68789450c0642ec48bb7a4f8d7f24c7bf
 
   - name: libayatana-indicator
     buildsystem: cmake-ninja
@@ -92,9 +92,9 @@ modules:
       - -DENABLE_TESTS=OFF
       - -DENABLE_WERROR=OFF
     sources:
-      - type: git
-        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
-        commit: 611bb384b73fa6311777ba4c41381a06f5b99dad
+      - type: archive
+        url: https://codeload.github.com/AyatanaIndicators/libayatana-indicator/tar.gz/611bb384b73fa6311777ba4c41381a06f5b99dad
+        sha256: 57b3f127ca32f3587dd2323491f259e18be018813d35f8f6fe9d683420d7c27d
 
   - name: libayatana-appindicator
     buildsystem: cmake-ninja
@@ -107,9 +107,9 @@ modules:
       - -DENABLE_BINDINGS_MONO=OFF
       - -DENABLE_BINDINGS_VALA=OFF
     sources:
-      - type: git
-        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
-        commit: 31e8bb083b307e1cc96af4874a94707727bd1e79
+      - type: archive
+        url: https://codeload.github.com/AyatanaIndicators/libayatana-appindicator/tar.gz/31e8bb083b307e1cc96af4874a94707727bd1e79
+        sha256: b3e6c08de185b137205e95278251e167503aed80cb07da0e30bc194b33ebb442
 
   - name: linux-network-speed-indicator
     buildsystem: simple

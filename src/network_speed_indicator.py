@@ -2,10 +2,11 @@
 
 import fcntl
 import json
+import logging
 import os
-import re
 import sys
 import time
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 import gi
@@ -16,6 +17,33 @@ gi.require_version('AyatanaAppIndicator3', '0.1')
 from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 from gi.repository import GLib
 from gi.repository import Gtk
+
+if __package__:
+    from .network_speed_indicator_core import (
+        DEFAULT_CONFIG,
+        DISPLAY_OPTIONS,
+        REFRESH_OPTIONS,
+        UNIT_OPTIONS,
+        VALID_DISPLAY_MODES,
+        VALID_REFRESH_INTERVALS,
+        VALID_UNIT_MODES,
+        build_indicator_label,
+        normalize_config,
+        read_bytes,
+    )
+else:
+    from network_speed_indicator_core import (
+        DEFAULT_CONFIG,
+        DISPLAY_OPTIONS,
+        REFRESH_OPTIONS,
+        UNIT_OPTIONS,
+        VALID_DISPLAY_MODES,
+        VALID_REFRESH_INTERVALS,
+        VALID_UNIT_MODES,
+        build_indicator_label,
+        normalize_config,
+        read_bytes,
+    )
 
 
 APP_ID = 'linux-network-speed-indicator'
@@ -30,12 +58,15 @@ FLATPAK_SHARE_DIR = Path('/app/share') / APP_ID
 SNAP_ROOT = Path(os.environ['SNAP']) if IS_SNAP else None
 SNAP_SHARE_DIR = SNAP_ROOT / 'usr' / 'share' / APP_ID if SNAP_ROOT else None
 SYSTEM_SHARE_DIR = Path('/usr/share') / APP_ID
+STATE_HOME = Path(os.environ.get('XDG_STATE_HOME', str(Path.home() / '.local' / 'state')))
+STATE_DIR = STATE_HOME / APP_ID
 CONFIG_HOME = Path(os.environ.get('XDG_CONFIG_HOME', str(Path.home() / '.config')))
 CONFIG_DIR = CONFIG_HOME / APP_ID
 CONFIG_PATH = CONFIG_DIR / 'config.json'
 AUTOSTART_PATH = CONFIG_HOME / 'autostart' / f'{APP_ID}.desktop'
 SYSTEM_AUTOSTART_PATH = Path('/etc/xdg/autostart') / f'{APP_ID}.desktop'
 LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
+LOG_PATH = STATE_DIR / f'{APP_ID}.log'
 ICON_NAME = 'network-speed-indicator-empty'
 APP_ICON_NAME = 'linux-network-speed-indicator'
 AUTOSTART_SUPPORTED = not IS_SANDBOXED
@@ -53,54 +84,6 @@ PROJECT_DEFAULT_CONFIG_PATH = (
     PROJECT_ROOT / 'config' / 'default-config.json' if PROJECT_ROOT else None
 )
 
-DEFAULT_CONFIG = {
-    'unit_mode': 'auto',
-    'display_mode': 'split',
-    'refresh_interval': 1,
-}
-
-UNIT_OPTIONS = (
-    ('auto', 'Automatic (KB/MB/GB)'),
-    ('kb', 'Always KB/s'),
-    ('mb', 'Always MB/s'),
-    ('gb', 'Always GB/s'),
-)
-
-DISPLAY_OPTIONS = (
-    ('split', 'Download + Upload'),
-    ('total', 'Total only'),
-    ('download', 'Download only'),
-    ('upload', 'Upload only'),
-)
-
-REFRESH_OPTIONS = (
-    (1, 'Every 1 second'),
-    (2, 'Every 2 seconds'),
-    (5, 'Every 5 seconds'),
-)
-
-FORCED_UNITS = {
-    'kb': (1024.0, 'KB/s'),
-    'mb': (1024.0 * 1024.0, 'MB/s'),
-    'gb': (1024.0 * 1024.0 * 1024.0, 'GB/s'),
-}
-
-VALID_UNIT_MODES = {value for value, _label in UNIT_OPTIONS}
-VALID_DISPLAY_MODES = {value for value, _label in DISPLAY_OPTIONS}
-VALID_REFRESH_INTERVALS = {value for value, _label in REFRESH_OPTIONS}
-
-IGNORED_IFACE_PATTERNS = (
-    re.compile(r'^lo$'),
-    re.compile(r'^br[0-9]+$'),
-    re.compile(r'^br-[A-Za-z0-9]+$'),
-    re.compile(r'^tun[0-9]+$'),
-    re.compile(r'^tap[0-9]+$'),
-    re.compile(r'^veth[A-Za-z0-9]+$'),
-    re.compile(r'^virbr[0-9]+$'),
-    re.compile(r'^docker0$'),
-    re.compile(r'^proton[0-9]+$'),
-)
-
 
 
 def first_existing_path(*candidates: Path | None) -> Path | None:
@@ -108,6 +91,40 @@ def first_existing_path(*candidates: Path | None) -> Path | None:
         if candidate and candidate.exists():
             return candidate
     return None
+
+
+def configure_logging() -> logging.Logger:
+    logger = logging.getLogger(APP_ID)
+    if logger.handlers:
+        return logger
+
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+
+    stream_handler = logging.StreamHandler(sys.stderr)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    try:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        file_handler = RotatingFileHandler(
+            LOG_PATH,
+            maxBytes=256 * 1024,
+            backupCount=3,
+            encoding='utf-8',
+        )
+    except OSError:
+        logger.warning('Failed to initialize log file at %s.', LOG_PATH)
+        return logger
+
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    return logger
+
+
+LOGGER = configure_logging()
 
 
 ICON_DIR = first_existing_path(
@@ -145,56 +162,6 @@ Categories=Network;Utility;
 """
 
 
-def should_ignore_interface(name: str) -> bool:
-    return any(pattern.match(name) for pattern in IGNORED_IFACE_PATTERNS)
-
-
-def read_bytes() -> tuple[int, int]:
-    download_total = 0
-    upload_total = 0
-
-    with open('/proc/net/dev', 'r', encoding='utf-8') as proc_net_dev:
-        for line in proc_net_dev.readlines()[2:]:
-            if ':' not in line:
-                continue
-
-            iface, raw_values = line.split(':', 1)
-            iface = iface.strip()
-            if should_ignore_interface(iface):
-                continue
-
-            values = raw_values.split()
-            if len(values) < 16:
-                continue
-
-            download_total += int(values[0])
-            upload_total += int(values[8])
-
-    return download_total, upload_total
-
-
-def normalize_config(raw_config: object) -> dict[str, object]:
-    config = DEFAULT_CONFIG.copy()
-    if not isinstance(raw_config, dict):
-        return config
-
-    unit_mode = raw_config.get('unit_mode')
-    if unit_mode == 'bytes':
-        unit_mode = 'kb'
-    if unit_mode in VALID_UNIT_MODES:
-        config['unit_mode'] = unit_mode
-
-    display_mode = raw_config.get('display_mode')
-    if display_mode in VALID_DISPLAY_MODES:
-        config['display_mode'] = display_mode
-
-    refresh_interval = raw_config.get('refresh_interval')
-    if isinstance(refresh_interval, int) and refresh_interval in VALID_REFRESH_INTERVALS:
-        config['refresh_interval'] = refresh_interval
-
-    return config
-
-
 def load_default_config() -> dict[str, object]:
     if not DEFAULT_CONFIG_SOURCE:
         return DEFAULT_CONFIG.copy()
@@ -202,7 +169,8 @@ def load_default_config() -> dict[str, object]:
     try:
         with DEFAULT_CONFIG_SOURCE.open('r', encoding='utf-8') as config_file:
             raw_config = json.load(config_file)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError) as error:
+        LOGGER.warning('Failed to load default config from %s: %s', DEFAULT_CONFIG_SOURCE, error)
         return DEFAULT_CONFIG.copy()
 
     return normalize_config(raw_config)
@@ -212,7 +180,10 @@ def load_config() -> dict[str, object]:
     try:
         with CONFIG_PATH.open('r', encoding='utf-8') as config_file:
             raw_config = json.load(config_file)
-    except (FileNotFoundError, OSError, json.JSONDecodeError):
+    except FileNotFoundError:
+        return load_default_config()
+    except (OSError, json.JSONDecodeError) as error:
+        LOGGER.warning('Failed to load user config from %s: %s', CONFIG_PATH, error)
         return load_default_config()
 
     return normalize_config(raw_config)
@@ -269,37 +240,14 @@ def acquire_single_instance_lock():
     return lock_handle
 
 
-def format_number(value: float, unit_label: str) -> str:
-    if value >= 100:
-        return f'{value:.0f} {unit_label}'
-    if value >= 10:
-        return f'{value:.1f} {unit_label}'
-    return f'{value:.2f} {unit_label}'
-
-
-def format_rate(rate_bytes_per_second: float, unit_mode: str) -> str:
-    if unit_mode != 'auto':
-        factor, unit_label = FORCED_UNITS[unit_mode]
-        value = max(rate_bytes_per_second, 0.0) / factor
-        return format_number(value, unit_label)
-
-    units = ('KB/s', 'MB/s', 'GB/s', 'TB/s')
-    value = max(rate_bytes_per_second, 0.0) / 1024.0
-    unit_index = 0
-
-    while value >= 1024.0 and unit_index < len(units) - 1:
-        value /= 1024.0
-        unit_index += 1
-
-    return format_number(value, units[unit_index])
-
-
 class NetworkSpeedIndicator:
     def __init__(self, lock_handle) -> None:
         self._lock_handle = lock_handle
         self.config = load_config()
         self.autostart_enabled = is_autostart_enabled()
         self._update_id = 0
+        self._last_error_signature: tuple[str, str] | None = None
+        self._last_label: str | None = None
         self._split_label_guide = '↓ 9999.9 TB/s  ↑ 9999.9 TB/s'
         self._single_label_guides = {
             'download': '↓ 9999.9 TB/s',
@@ -451,8 +399,16 @@ class NetworkSpeedIndicator:
         if self.autostart_enabled == enabled:
             return
 
+        try:
+            write_autostart_file(enabled)
+        except OSError:
+            LOGGER.exception('Failed to update autostart entry at %s.', AUTOSTART_PATH)
+            item.handler_block_by_func(self._on_autostart_toggled)
+            item.set_active(self.autostart_enabled)
+            item.handler_unblock_by_func(self._on_autostart_toggled)
+            return
+
         self.autostart_enabled = enabled
-        write_autostart_file(enabled)
 
     def _quit(self, _item: Gtk.MenuItem) -> None:
         if self._update_id:
@@ -475,23 +431,24 @@ class NetworkSpeedIndicator:
 
             unit_mode = self.config['unit_mode']
             display_mode = self.config['display_mode']
+            label = build_indicator_label(download_rate, upload_rate, unit_mode, display_mode)
+            if self._last_label != label:
+                self.indicator.set_label(label, self._get_label_guide())
+                self._last_label = label
 
-            if display_mode == 'split':
-                label = (
-                    f'↓ {format_rate(download_rate, unit_mode)}  '
-                    f'↑ {format_rate(upload_rate, unit_mode)}'
-                )
-            elif display_mode == 'total':
-                label = f'⇅ {format_rate(download_rate + upload_rate, unit_mode)}'
-            elif display_mode == 'download':
-                label = f'↓ {format_rate(download_rate, unit_mode)}'
-            else:
-                label = f'↑ {format_rate(upload_rate, unit_mode)}'
-
-            self.indicator.set_label(label, self._get_label_guide())
+            if self._last_error_signature is not None:
+                LOGGER.info('Recovered from previous runtime update error.')
+                self._last_error_signature = None
         except Exception as error:  # pragma: no cover
-            self.indicator.set_label('↓ err  ↑ err', self._split_label_guide)
-            print(f'{APP_ID} error: {error}', file=sys.stderr)
+            error_signature = (type(error).__name__, str(error))
+            if self._last_error_signature != error_signature:
+                LOGGER.exception('Failed to update network speed indicator.')
+                self._last_error_signature = error_signature
+
+            error_label = '↓ err  ↑ err'
+            if self._last_label != error_label:
+                self.indicator.set_label(error_label, self._split_label_guide)
+                self._last_label = error_label
 
         return True
 
@@ -499,12 +456,21 @@ class NetworkSpeedIndicator:
 def main() -> None:
     lock_handle = acquire_single_instance_lock()
     if lock_handle is None:
+        LOGGER.info('Another %s instance is already running.', APP_ID)
         return
 
     if AUTOSTART_SUPPORTED and not AUTOSTART_PATH.exists() and not SYSTEM_AUTOSTART_PATH.exists():
-        write_autostart_file(True)
+        try:
+            write_autostart_file(True)
+        except OSError:
+            LOGGER.exception('Failed to initialize autostart entry at %s.', AUTOSTART_PATH)
 
-    NetworkSpeedIndicator(lock_handle)
+    try:
+        NetworkSpeedIndicator(lock_handle)
+    except Exception:  # pragma: no cover
+        LOGGER.exception('Application startup failed.')
+        raise
+
     Gtk.main()
 
 

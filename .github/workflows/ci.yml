@@ -22,21 +22,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Validate Python source
-        run: python -m py_compile src/network_speed_indicator.py
-
-      - name: Validate shell scripts
+      - name: Install CI dependencies
         run: |
-          bash -n install.sh
-          bash -n uninstall.sh
-          bash -n scripts/build-deb.sh
-          bash -n scripts/build-flatpak.sh
-          bash -n scripts/build-release.sh
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder zip
 
-      - name: Validate JSON config
-        run: python -m json.tool config/default-config.json > /dev/null
-
-      - name: Build Debian package
+      - name: Validate project
         run: |
-          chmod +x scripts/build-deb.sh
-          ./scripts/build-deb.sh "$(cat VERSION)"
+          bash ./scripts/validate-project.sh
+
+      - name: Build Snap bundle
+        id: snapcraft
+        uses: snapcore/action-build@v1
+
+      - name: Build release archives
+        run: |
+          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh scripts/validate-project.sh
+          ./scripts/build-release.sh "$(cat VERSION)"
+
+      - name: Build Flatpak bundle
+        run: |
+          ./scripts/build-flatpak.sh

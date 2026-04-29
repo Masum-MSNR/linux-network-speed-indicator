@@ -48,14 +48,7 @@ jobs:
 
       - name: Validate project
         run: |
-          python -m py_compile src/network_speed_indicator.py
-          bash -n install.sh
-          bash -n uninstall.sh
-          bash -n scripts/build-deb.sh
-          bash -n scripts/build-flatpak.sh
-          bash -n scripts/build-snap.sh
-          bash -n scripts/sync-snap-store-listing.sh
-          bash -n scripts/build-release.sh
+          bash ./scripts/validate-project.sh
 
       - name: Build Snap bundle
         id: snapcraft
@@ -63,7 +56,7 @@ jobs:
 
       - name: Build release archives
         run: |
-          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh
+          chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh scripts/validate-project.sh
           ./scripts/build-release.sh "$(cat VERSION)"
 
       - name: Build Flatpak bundle

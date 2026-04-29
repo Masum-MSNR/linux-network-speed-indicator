@@ -154,8 +154,9 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 
 ## GitHub Actions
 
-- `ci.yml` validates Python, shell scripts, JSON, and Debian package creation.
-- `release.yml` runs only when `VERSION` changes on `main`, installs `pymacaroons` for listing auth, builds and publishes the Snap first, syncs the Snap Store screenshots/category, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
+- `scripts/validate-project.sh` is the shared validation entrypoint for local checks, CI, and the release workflow; it runs Python compilation, unit tests, shell syntax checks, JSON validation, and AppStream validation when available.
+- `ci.yml` now uses the shared validation script, builds the Snap bundle, creates the release archives, and builds the Flatpak bundle so packaging regressions are caught before release.
+- `release.yml` runs only when `VERSION` changes on `main`, reuses the shared validation script, installs `pymacaroons` for listing auth, builds and publishes the Snap first, syncs the Snap Store screenshots/category, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
 
 ## Linux Store Readiness
 
