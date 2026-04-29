@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.11] - 2026-04-29
+- Fixed Flatpak dependency archive URLs so Flatpak Builder recognizes the pinned Ayatana source archives reliably in CI and release builds.
+- Consolidated validation and publishing into a single GitHub Actions pipeline so release only runs after validation succeeds and only when `VERSION` changes on `main`.
+
 ## [0.1.10] - 2026-04-29
 - Extracted the core network speed parsing, formatting, and config normalization logic into a GTK-free module with automated unit coverage.
 - Added shared project validation for local use, CI, and release automation, and expanded CI to exercise the Snap, release-archive, and Flatpak build paths before release.
