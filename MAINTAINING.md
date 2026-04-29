@@ -131,6 +131,7 @@ Snap-specific behavior:
 - Snap builds disable the autostart toggle because sandboxed autostart files do not affect the host desktop session
 - the Snap uses strict confinement and requests `network-observe` for `/proc/net/dev` access
 - Snap Store screenshots and the Snap Store category are separate store-listing metadata and are not imported from AppStream `parse-info`
+- `scripts/sync-snap-store-listing.sh` binds the exported `STORE_LOGIN` Ubuntu One macaroons and uses the Dashboard API to keep the Snap Store category plus screenshots aligned with the repo assets after publish
 
 ## Version Control Flow
 
@@ -154,7 +155,7 @@ GitHub Actions creates the matching `v<version>` tag and publishes the release a
 ## GitHub Actions
 
 - `ci.yml` validates Python, shell scripts, JSON, and Debian package creation.
-- `release.yml` runs only when `VERSION` changes on `main`, builds and publishes the Snap first, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
+- `release.yml` runs only when `VERSION` changes on `main`, installs `pymacaroons` for listing auth, builds and publishes the Snap first, syncs the Snap Store screenshots/category, then creates the matching Git tag and publishes `.deb`, `.flatpak`, `.snap`, `.zip`, and `.tar.gz` artifacts.
 
 ## Linux Store Readiness
 

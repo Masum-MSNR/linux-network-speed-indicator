@@ -32,6 +32,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder zip
+          python -m pip install pymacaroons
 
       - name: Resolve version
         id: version
@@ -53,6 +54,7 @@ jobs:
           bash -n scripts/build-deb.sh
           bash -n scripts/build-flatpak.sh
           bash -n scripts/build-snap.sh
+          bash -n scripts/sync-snap-store-listing.sh
           bash -n scripts/build-release.sh
 
       - name: Build Snap bundle
@@ -80,6 +82,13 @@ jobs:
         with:
           snap: ${{ steps.snapcraft.outputs.snap }}
           release: stable
+
+      - name: Sync Snap Store listing
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+          PYTHON: python
+        run: |
+          bash ./scripts/sync-snap-store-listing.sh
 
       - name: Create or reuse release tag
         env:
