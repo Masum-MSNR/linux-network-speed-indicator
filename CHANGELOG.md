@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.4] - 2026-04-29
+- Fixed the Flatpak build so the bundled Ayatana and libdbusmenu stack now builds successfully.
+- Added a GitHub release `.flatpak` bundle alongside the existing `.deb`, `.zip`, and `.tar.gz` assets.
+- Updated the release workflow and README download instructions for the new Flatpak artifact.
+
 ## [0.1.3] - 2026-04-29
 - Added the final real application screenshots to the README.
 - Replaced generated AppStream screenshot assets with the final approved images.
