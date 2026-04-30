@@ -2,6 +2,12 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.14] - 2026-05-01
+- Fixed Snap launcher to also locate the Python interpreter inside the gnome-46-2404 content snap (`$SNAP/gnome-platform/usr/bin/python3*`) so the app actually starts on systems where the gnome extension prunes Python from the snap itself.
+- Fixed Snap login autostart by actually generating the `linux-network-speed-indicator-autostart.desktop` file referenced by `apps.<name>.autostart` so snapd installs the autostart entry on first run.
+- Trimmed the GitHub Actions `validate` job to just project validation, tests, and release archive builds; the Snap and Flatpak bundles are now built only in the release path, cutting CI time on every push and pull request.
+- Marked the Snap Store listing sync step as non-fatal so an expired macaroon discharge no longer fails the release pipeline; the snap upload + tag + GitHub release still complete and a warning is surfaced in the job log.
+
 ## [0.1.13] - 2026-04-30
 - Fixed Snap packaging to include the `network_speed_indicator_core.py` runtime module so installed Snap builds start correctly.
 - Fixed Snap login autostart so the app writes a matching per-user desktop entry into `$SNAP_USER_DATA/.config/autostart` and uses `/snap/bin/linux-network-speed-indicator` when launched from Snap.

@@ -56,18 +56,24 @@ parts:
 
       printf '%s\n' \
         '#!/bin/sh' \
-        'python_bin="$SNAP/usr/bin/python3"' \
+        'python_bin=""' \
         '' \
-        'if [ ! -x "$python_bin" ]; then' \
-        '  for candidate in "$SNAP"/usr/bin/python3.*; do' \
-        '    if [ -x "$candidate" ]; then' \
-        '      python_bin="$candidate"' \
-        '      break' \
-        '    fi' \
-        '  done' \
+        'for candidate in \' \
+        '  "$SNAP/usr/bin/python3" \' \
+        '  "$SNAP"/usr/bin/python3.* \' \
+        '  "$SNAP/gnome-platform/usr/bin/python3" \' \
+        '  "$SNAP"/gnome-platform/usr/bin/python3.*; do' \
+        '  if [ -x "$candidate" ]; then' \
+        '    python_bin="$candidate"' \
+        '    break' \
+        '  fi' \
+        'done' \
+        '' \
+        'if [ -z "$python_bin" ]; then' \
+        '  python_bin="$(command -v python3 || true)"' \
         'fi' \
         '' \
-        'if [ ! -x "$python_bin" ]; then' \
+        'if [ -z "$python_bin" ] || [ ! -x "$python_bin" ]; then' \
         '  echo "Python runtime not found inside snap." >&2' \
         '  exit 127' \
         'fi' \
@@ -96,6 +102,12 @@ parts:
         -e 's|^Icon=.*$|Icon=${SNAP}/meta/gui/icon.svg|' \
         "$CRAFT_PROJECT_DIR/assets/applications/linux-network-speed-indicator.desktop.in" \
         > "$CRAFT_PART_INSTALL/usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop"
+
+      sed \
+        -e "s|__EXEC_PATH__|/snap/bin/linux-network-speed-indicator|g" \
+        -e 's|^Icon=.*$|Icon=${SNAP}/meta/gui/icon.svg|' \
+        "$CRAFT_PROJECT_DIR/assets/autostart/linux-network-speed-indicator.desktop.in" \
+        > "$CRAFT_PART_INSTALL/linux-network-speed-indicator-autostart.desktop"
     parse-info:
       - usr/share/metainfo/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.metainfo.xml
     stage-packages:

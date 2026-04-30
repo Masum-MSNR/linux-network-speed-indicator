@@ -62,26 +62,16 @@ jobs:
       - name: Install CI dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y flatpak flatpak-builder zip
+          sudo apt-get install -y zip
 
       - name: Validate project
         run: |
           bash ./scripts/validate-project.sh
 
-      - name: Build Snap bundle
-        id: snapcraft
-        uses: snapcore/action-build@v1
-        with:
-          snapcraft-args: --platform amd64
-
       - name: Build release archives
         run: |
           chmod +x install.sh uninstall.sh scripts/build-deb.sh scripts/build-flatpak.sh scripts/build-snap.sh scripts/build-release.sh scripts/validate-project.sh
           ./scripts/build-release.sh "$(cat VERSION)"
-
-      - name: Build Flatpak bundle
-        run: |
-          ./scripts/build-flatpak.sh
 
   build-and-release:
     needs:
@@ -189,6 +179,7 @@ jobs:
           done
 
       - name: Sync Snap Store listing
+        continue-on-error: true
         env:
           SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
           PYTHON: python
