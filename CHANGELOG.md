@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.17] - 2026-05-01
+- Removed the Snap Store listing sync step (`scripts/sync-snap-store-listing.sh`) and the workflow step that ran it. The Dashboard API call kept failing in CI with `HTTP 401: Expired macaroon` because the discharge macaroon in `STORE_LOGIN` only lives ~24 h and the snapcraft upload path does not refresh it. Snap Store category and screenshots are now maintained directly via the Snap Store web dashboard, which is the supported workflow.
+- Removed the `pymacaroons` install step from the release pipeline since it was only used by the deleted listing-sync script.
+- Shrunk the placeholder indicator icon (`network-speed-indicator-empty.svg`) to a true 1x1 SVG so any AppIndicator renderer that respects the source icon aspect ratio collapses the icon slot. The visible left-side gap is the AppIndicator icon slot reserved by the GNOME `appindicator` extension; it cannot be eliminated entirely without replacing the renderer, but this minimizes it on extensions that scale by source dimensions.
+
 ## [0.1.16] - 2026-05-01
 - Tightened the panel indicator's left padding by shrinking the transparent placeholder icon (`network-speed-indicator-empty.svg`) from 16x16 to 1x16. AyatanaAppIndicator no longer reserves a full icon slot on the left of the speed text, so the label sits flush in the GNOME top bar and the popup menu re-centers under the narrower indicator automatically.
 

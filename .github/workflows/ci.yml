@@ -152,7 +152,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y flatpak flatpak-builder zip
-          python -m pip install pymacaroons
 
       - name: Resolve version
         id: version
@@ -200,14 +199,6 @@ jobs:
           for snap_file in dist/*.snap; do
             "${snapcraft_bin}" upload --release stable "${snap_file}"
           done
-
-      - name: Sync Snap Store listing
-        continue-on-error: true
-        env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
-          PYTHON: python
-        run: |
-          bash ./scripts/sync-snap-store-listing.sh
 
       - name: Create or reuse release tag
         env:

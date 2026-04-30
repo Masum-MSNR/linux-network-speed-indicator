@@ -15,7 +15,6 @@ bash -n uninstall.sh
 bash -n scripts/build-deb.sh
 bash -n scripts/build-flatpak.sh
 bash -n scripts/build-snap.sh
-bash -n scripts/sync-snap-store-listing.sh
 bash -n scripts/build-release.sh
 
 "${PYTHON_BIN}" -m json.tool config/default-config.json > /dev/null
