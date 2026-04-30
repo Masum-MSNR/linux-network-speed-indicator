@@ -40,7 +40,6 @@ mkdir -p \
   "${METAINFO_DIR}"
 
 install -m 0755 "${PROJECT_ROOT}/src/network_speed_indicator.py" "${EXEC_PATH}"
-install -m 0644 "${PROJECT_ROOT}/assets/icons/network-speed-indicator-empty.svg" "${SHARE_DIR}/icons/network-speed-indicator-empty.svg"
 install -m 0644 "${PROJECT_ROOT}/assets/icons/linux-network-speed-indicator.svg" "${APP_ICON_PATH}"
 install -m 0644 "${PROJECT_ROOT}/assets/metainfo/linux-network-speed-indicator.metainfo.xml" "${METAINFO_PATH}"
 install -m 0644 "${PROJECT_ROOT}/config/default-config.json" "${SHARE_DIR}/default-config.json"

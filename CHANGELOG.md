@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.18] - 2026-05-01
+- Removed the unused transparent placeholder icon (`network-speed-indicator-empty.svg`) entirely. The AppIndicator is now constructed with an empty icon name, so the GNOME `appindicator` extension does not allocate an icon slot to the left of the label. The speed text now sits flush in the panel and the popup menu naturally centers under the narrower indicator.
+- Cleaned up all build paths (`install.sh`, `scripts/build-deb.sh`, `snap/snapcraft.yaml`, the Flatpak manifest) and Python constants (`ICON_NAME`, `PROJECT_ICON_DIR`, `ICON_DIR`) that referenced the removed asset.
+
 ## [0.1.17] - 2026-05-01
 - Removed the Snap Store listing sync step (`scripts/sync-snap-store-listing.sh`) and the workflow step that ran it. The Dashboard API call kept failing in CI with `HTTP 401: Expired macaroon` because the discharge macaroon in `STORE_LOGIN` only lives ~24 h and the snapcraft upload path does not refresh it. Snap Store category and screenshots are now maintained directly via the Snap Store web dashboard, which is the supported workflow.
 - Removed the `pymacaroons` install step from the release pipeline since it was only used by the deleted listing-sync script.

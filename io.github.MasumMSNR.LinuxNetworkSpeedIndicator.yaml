@@ -116,7 +116,6 @@ modules:
     build-commands:
       - install -Dm755 src/network_speed_indicator.py /app/bin/linux-network-speed-indicator
       - install -Dm644 config/default-config.json /app/share/linux-network-speed-indicator/default-config.json
-      - install -Dm644 assets/icons/network-speed-indicator-empty.svg /app/share/linux-network-speed-indicator/icons/network-speed-indicator-empty.svg
       - install -Dm644 assets/icons/linux-network-speed-indicator.svg /app/share/icons/hicolor/scalable/apps/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.svg
       - sed -e 's|__EXEC_PATH__|linux-network-speed-indicator|g' -e 's|^Icon=.*|Icon=io.github.MasumMSNR.LinuxNetworkSpeedIndicator|' assets/applications/linux-network-speed-indicator.desktop.in > io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
       - install -Dm644 io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop /app/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop

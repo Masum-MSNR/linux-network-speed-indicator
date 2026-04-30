@@ -15,15 +15,13 @@ mkdir -p \
   "${STAGING_DIR}/usr/bin" \
   "${STAGING_DIR}/usr/share/icons/hicolor/scalable/apps" \
   "${STAGING_DIR}/usr/share/metainfo" \
-  "${STAGING_DIR}/usr/share/${PROJECT_SLUG}/icons" \
+  "${STAGING_DIR}/usr/share/${PROJECT_SLUG}" \
   "${STAGING_DIR}/usr/share/applications" \
   "${STAGING_DIR}/usr/share/doc/${PROJECT_SLUG}" \
   "${STAGING_DIR}/etc/xdg/autostart"
 
 install -m 0755 "${PROJECT_ROOT}/src/network_speed_indicator.py" \
   "${STAGING_DIR}/usr/bin/${PROJECT_SLUG}"
-install -m 0644 "${PROJECT_ROOT}/assets/icons/network-speed-indicator-empty.svg" \
-  "${STAGING_DIR}/usr/share/${PROJECT_SLUG}/icons/network-speed-indicator-empty.svg"
 install -m 0644 "${PROJECT_ROOT}/assets/icons/linux-network-speed-indicator.svg" \
   "${STAGING_DIR}/usr/share/icons/hicolor/scalable/apps/${PROJECT_SLUG}.svg"
 install -m 0644 "${PROJECT_ROOT}/assets/metainfo/linux-network-speed-indicator.metainfo.xml" \

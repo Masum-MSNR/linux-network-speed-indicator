@@ -67,7 +67,6 @@ AUTOSTART_PATH = CONFIG_HOME / 'autostart' / f'{APP_ID}.desktop'
 SYSTEM_AUTOSTART_PATH = Path('/etc/xdg/autostart') / f'{APP_ID}.desktop'
 LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
 LOG_PATH = STATE_DIR / f'{APP_ID}.log'
-ICON_NAME = 'network-speed-indicator-empty'
 APP_ICON_NAME = 'linux-network-speed-indicator'
 AUTOSTART_SUPPORTED = not IS_FLATPAK
 SNAP_COMMAND_PATH = Path('/snap/bin') / APP_ID if IS_SNAP else None
@@ -80,7 +79,6 @@ PROJECT_ROOT = next(
     ),
     None,
 )
-PROJECT_ICON_DIR = PROJECT_ROOT / 'assets' / 'icons' if PROJECT_ROOT else None
 PROJECT_DEFAULT_CONFIG_PATH = (
     PROJECT_ROOT / 'config' / 'default-config.json' if PROJECT_ROOT else None
 )
@@ -128,13 +126,6 @@ def configure_logging() -> logging.Logger:
 LOGGER = configure_logging()
 
 
-ICON_DIR = first_existing_path(
-    USER_SHARE_DIR / 'icons',
-    FLATPAK_SHARE_DIR / 'icons',
-    SNAP_SHARE_DIR / 'icons',
-    SYSTEM_SHARE_DIR / 'icons',
-    PROJECT_ICON_DIR,
-)
 DEFAULT_CONFIG_SOURCE = first_existing_path(
     USER_SHARE_DIR / 'default-config.json',
     FLATPAK_SHARE_DIR / 'default-config.json',
@@ -255,7 +246,7 @@ class NetworkSpeedIndicator:
             'upload': '↑ 9999.9 TB/s',
             'total': '⇅ 9999.9 TB/s',
         }
-        indicator_icon = ICON_NAME if ICON_DIR else 'network-transmit-receive-symbolic'
+        indicator_icon = ''
 
         self.indicator = AppIndicator3.Indicator.new(
             APP_ID,
@@ -264,11 +255,6 @@ class NetworkSpeedIndicator:
         )
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
         self.indicator.set_title(APP_TITLE)
-        if ICON_DIR and ICON_DIR.exists():
-            self.indicator.set_icon_theme_path(str(ICON_DIR))
-            self.indicator.set_icon_full(indicator_icon, APP_TITLE)
-        else:
-            self.indicator.set_icon_full(indicator_icon, APP_TITLE)
 
         self.indicator.set_label('↓ --  ↑ --', self._split_label_guide)
         self.indicator.set_menu(self._build_menu())
