@@ -2,6 +2,9 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.16] - 2026-05-01
+- Tightened the panel indicator's left padding by shrinking the transparent placeholder icon (`network-speed-indicator-empty.svg`) from 16x16 to 1x16. AyatanaAppIndicator no longer reserves a full icon slot on the left of the speed text, so the label sits flush in the GNOME top bar and the popup menu re-centers under the narrower indicator automatically.
+
 ## [0.1.15] - 2026-05-01
 - Re-released `0.1.14` payload (snap launcher fix + autostart fix) after a transient apt mirror failure caused the previous amd64 build to fail mid-release.
 - Replaced `snapcore/action-build@v1` with a direct `snapcraft pack --destructive-mode` step in the release workflow. The GitHub runner's Ubuntu 24.04 image already matches the snap's `core24` base, so building destructively skips the LXD VM bootstrap and shaves several minutes off each architecture.
