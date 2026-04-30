@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.15] - 2026-05-01
+- Re-released `0.1.14` payload (snap launcher fix + autostart fix) after a transient apt mirror failure caused the previous amd64 build to fail mid-release.
+- Replaced `snapcore/action-build@v1` with a direct `snapcraft pack --destructive-mode` step in the release workflow. The GitHub runner's Ubuntu 24.04 image already matches the snap's `core24` base, so building destructively skips the LXD VM bootstrap and shaves several minutes off each architecture.
+- Added a 3-attempt retry loop around the snap build so transient apt mirror outages are recovered automatically instead of failing the whole release.
+
 ## [0.1.14] - 2026-05-01
 - Fixed Snap launcher to also locate the Python interpreter inside the gnome-46-2404 content snap (`$SNAP/gnome-platform/usr/bin/python3*`) so the app actually starts on systems where the gnome extension prunes Python from the snap itself.
 - Fixed Snap login autostart by actually generating the `linux-network-speed-indicator-autostart.desktop` file referenced by `apps.<name>.autostart` so snapd installs the autostart entry on first run.

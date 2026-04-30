@@ -94,11 +94,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build Snap bundle
+      - name: Install Snapcraft
+        run: |
+          sudo snap install --classic snapcraft
+
+      - name: Build Snap bundle (destructive mode, with retry)
         id: snapcraft
-        uses: snapcore/action-build@v1
-        with:
-          snapcraft-args: --platform ${{ matrix.architecture }}
+        run: |
+          set -e
+          attempt=1
+          max=3
+          while :; do
+            echo "::group::snapcraft pack attempt ${attempt}/${max}"
+            if sudo snapcraft pack --destructive-mode --platform ${{ matrix.architecture }} --output .; then
+              echo "::endgroup::"
+              break
+            fi
+            echo "::endgroup::"
+            if [ "${attempt}" -ge "${max}" ]; then
+              echo "snapcraft failed after ${max} attempts." >&2
+              exit 1
+            fi
+            attempt=$((attempt + 1))
+            echo "Retrying after transient failure..."
+            sudo snapcraft clean || true
+            sleep 15
+          done
+          snap_file="$(ls -1 *.snap | head -1)"
+          echo "snap=${snap_file}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload Snap artifact
         uses: actions/upload-artifact@v4
