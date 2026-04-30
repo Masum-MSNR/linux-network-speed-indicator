@@ -128,7 +128,8 @@ Flatpak-specific behavior:
 Snap-specific behavior:
 
 - the app now probes `$SNAP/usr/share/linux-network-speed-indicator/` for bundled icons and default config
-- Snap builds disable the autostart toggle because sandboxed autostart files do not affect the host desktop session
+- Snap builds declare the autostart desktop filename through `apps.linux-network-speed-indicator.autostart`
+- the app writes the matching desktop entry into `$SNAP_USER_DATA/.config/autostart` on first run, and the in-app toggle can update that entry afterward
 - the Snap uses strict confinement and requests `network-observe` for `/proc/net/dev` access
 - Snap Store screenshots and the Snap Store category are separate store-listing metadata and are not imported from AppStream `parse-info`
 - `scripts/sync-snap-store-listing.sh` binds the exported `STORE_LOGIN` Ubuntu One macaroons and uses the Dashboard API to keep the Snap Store category plus screenshots aligned with the repo assets after publish

@@ -135,7 +135,8 @@ Snap notes:
 
 - the Snap uses strict confinement and reads live counters through the `network-observe` interface
 - the app probes `$SNAP/usr/share/linux-network-speed-indicator/` for its bundled icons and default config
-- the autostart toggle is intentionally disabled inside Snap because sandboxed autostart entries do not control the host session
+- the Snap declares the autostart desktop filename in `snap/snapcraft.yaml`, and the app writes that per-user autostart entry into `$SNAP_USER_DATA/.config/autostart`
+- the in-app Start on Login toggle remains enabled for Snap so first launch sets up automatic start on later login or restart
 - the app is published in the Snap Store as `linux-network-speed-indicator`
 - Snap Store screenshots and the Snap Store category are controlled separately from the packaged snap metadata
 

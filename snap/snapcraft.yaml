@@ -25,6 +25,7 @@ platforms:
 apps:
   linux-network-speed-indicator:
     command: bin/run-network-speed-indicator
+    autostart: linux-network-speed-indicator-autostart.desktop
     desktop: usr/share/applications/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.desktop
     common-id: io.github.MasumMSNR.LinuxNetworkSpeedIndicator
     extensions:
@@ -50,6 +51,8 @@ parts:
 
       install -m 0755 "$CRAFT_PROJECT_DIR/src/network_speed_indicator.py" \
         "$CRAFT_PART_INSTALL/bin/network-speed-indicator.py"
+      install -m 0644 "$CRAFT_PROJECT_DIR/src/network_speed_indicator_core.py" \
+        "$CRAFT_PART_INSTALL/bin/network_speed_indicator_core.py"
 
       printf '%s\n' \
         '#!/bin/sh' \

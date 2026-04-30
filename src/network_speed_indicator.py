@@ -69,7 +69,8 @@ LOCK_PATH = Path(os.environ.get('XDG_RUNTIME_DIR', '/tmp')) / f'{APP_ID}.lock'
 LOG_PATH = STATE_DIR / f'{APP_ID}.log'
 ICON_NAME = 'network-speed-indicator-empty'
 APP_ICON_NAME = 'linux-network-speed-indicator'
-AUTOSTART_SUPPORTED = not IS_SANDBOXED
+AUTOSTART_SUPPORTED = not IS_FLATPAK
+SNAP_COMMAND_PATH = Path('/snap/bin') / APP_ID if IS_SNAP else None
 
 PROJECT_ROOT = next(
     (
@@ -144,7 +145,7 @@ DEFAULT_CONFIG_SOURCE = first_existing_path(
 
 
 def render_autostart(enabled: bool) -> str:
-    exec_path = SCRIPT_PATH
+    exec_path = SNAP_COMMAND_PATH if SNAP_COMMAND_PATH else SCRIPT_PATH
     return f"""[Desktop Entry]
 Type=Application
 Version=1.0
