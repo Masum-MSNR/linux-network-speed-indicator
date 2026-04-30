@@ -2,6 +2,11 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.13] - 2026-04-30
+- Fixed Snap packaging to include the `network_speed_indicator_core.py` runtime module so installed Snap builds start correctly.
+- Fixed Snap login autostart so the app writes a matching per-user desktop entry into `$SNAP_USER_DATA/.config/autostart` and uses `/snap/bin/linux-network-speed-indicator` when launched from Snap.
+- Added regression coverage for Snap packaging and autostart metadata to catch these release regressions before publish.
+
 ## [0.1.12] - 2026-04-29
 - Added explicit Snap `platforms` for `amd64` and `arm64` so the package can be built and published for both mainstream architectures.
 - Updated the GitHub Actions release pipeline to build Snap artifacts per architecture, publish them only after both builds succeed, and keep the release/tag/listing finalization as a single gated step.
