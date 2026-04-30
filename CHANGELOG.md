@@ -2,6 +2,12 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.20] - 2026-05-01
+- Fixed the Flatpak release failure properly. There were two separate issues: the `libdbusmenu` source download from `archive.ubuntu.com` was timing out in CI, and the new retry wrapper in `scripts/build-flatpak.sh` was incorrectly swallowing the builder's non-zero exit code and falling through to `flatpak build-bundle`, which caused the misleading secondary error `dist/flatpak-repo is not a valid repository`.
+- Switched the Flatpak `libdbusmenu` source URL to Launchpad's file host, which downloaded immediately during local verification.
+- Fixed `scripts/build-flatpak.sh` to preserve and return the real builder exit status in both host and runtime modes before retrying.
+- Verified the updated Flatpak build locally end-to-end: the build passed the previous download failure point, compiled all dependencies, exported the app to the repo, and produced `dist/io.github.MasumMSNR.LinuxNetworkSpeedIndicator.flatpak` successfully.
+
 ## [0.1.19] - 2026-05-01
 - Fixed the Flatpak release build to retry transient `flatpak-builder` download failures. The failing GitHub Actions job died while fetching the `libdbusmenu` source tarball from `archive.ubuntu.com` with `SSL connection timeout`, before any compile step started.
 - Added a retry loop to `scripts/build-flatpak.sh` so temporary network failures while downloading Flatpak sources no longer fail the release on the first attempt.

@@ -51,7 +51,7 @@ modules:
       - --disable-introspection
     sources:
       - type: archive
-        url: https://archive.ubuntu.com/ubuntu/pool/main/libd/libdbusmenu/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
+        url: https://launchpad.net/ubuntu/+archive/primary/+files/libdbusmenu_18.10.20180917~bzr492+repack1.orig.tar.xz
         sha256: 41298b926573419f21864205317461750b833c596af6ab0bd206e13336f8cee3
       - type: shell
         commands:
