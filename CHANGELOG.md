@@ -2,6 +2,10 @@
 
 All notable changes to this project should be documented in this file.
 
+## [0.1.19] - 2026-05-01
+- Fixed the Flatpak release build to retry transient `flatpak-builder` download failures. The failing GitHub Actions job died while fetching the `libdbusmenu` source tarball from `archive.ubuntu.com` with `SSL connection timeout`, before any compile step started.
+- Added a retry loop to `scripts/build-flatpak.sh` so temporary network failures while downloading Flatpak sources no longer fail the release on the first attempt.
+
 ## [0.1.18] - 2026-05-01
 - Removed the unused transparent placeholder icon (`network-speed-indicator-empty.svg`) entirely. The AppIndicator is now constructed with an empty icon name, so the GNOME `appindicator` extension does not allocate an icon slot to the left of the label. The speed text now sits flush in the panel and the popup menu naturally centers under the narrower indicator.
 - Cleaned up all build paths (`install.sh`, `scripts/build-deb.sh`, `snap/snapcraft.yaml`, the Flatpak manifest) and Python constants (`ICON_NAME`, `PROJECT_ICON_DIR`, `ICON_DIR`) that referenced the removed asset.

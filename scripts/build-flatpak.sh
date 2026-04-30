@@ -39,31 +39,58 @@ fi
 
 rm -rf "${BUILD_DIR}" "${REPO_DIR}" "${BUNDLE_PATH}"
 
-if [ "${BUILDER_MODE}" = "host" ]; then
-  "${FLATPAK_BUILDER[@]}" \
-    --user \
-    --disable-rofiles-fuse \
-    --force-clean \
-    --repo="${REPO_DIR}" \
-    --install-deps-from=flathub \
-    "${BUILD_DIR}" \
-    "${MANIFEST}"
-else
-  WORK_DIR="$(mktemp -d)"
-  trap 'rm -rf "${WORK_DIR}"' EXIT
+run_flatpak_builder() {
+  if [ "${BUILDER_MODE}" = "host" ]; then
+    "${FLATPAK_BUILDER[@]}" \
+      --user \
+      --disable-rofiles-fuse \
+      --force-clean \
+      --repo="${REPO_DIR}" \
+      --install-deps-from=flathub \
+      "${BUILD_DIR}" \
+      "${MANIFEST}"
+    return 0
+  fi
 
-  flatpak run \
-    --cwd="${WORK_DIR}" \
-    --filesystem="${WORK_DIR}" \
+  work_dir="$(mktemp -d)"
+
+  if flatpak run \
+    --cwd="${work_dir}" \
+    --filesystem="${work_dir}" \
     --filesystem="${REPO_ROOT}:ro" \
     --command=flathub-build \
     org.flatpak.Builder \
     --disable-rofiles-fuse \
-    "${REPO_ROOT}/${MANIFEST}"
+    "${REPO_ROOT}/${MANIFEST}"; then
+    mv "${work_dir}/builddir" "${BUILD_DIR}"
+    mv "${work_dir}/repo" "${REPO_DIR}"
+    rm -rf "${work_dir}"
+    return 0
+  fi
 
-  mv "${WORK_DIR}/builddir" "${BUILD_DIR}"
-  mv "${WORK_DIR}/repo" "${REPO_DIR}"
-fi
+  status=$?
+  rm -rf "${work_dir}"
+  return "${status}"
+}
+
+attempt=1
+max_attempts="${FLATPAK_BUILD_RETRIES:-3}"
+
+while :; do
+  if run_flatpak_builder; then
+    break
+  fi
+
+  status=$?
+
+  if [ "${attempt}" -ge "${max_attempts}" ]; then
+    exit "${status}"
+  fi
+
+  echo "flatpak build failed on attempt ${attempt}/${max_attempts}; retrying after a transient download/build error..." >&2
+  attempt=$((attempt + 1))
+  rm -rf "${BUILD_DIR}" "${REPO_DIR}" "${BUNDLE_PATH}"
+done
 
 flatpak build-bundle "${REPO_DIR}" "${BUNDLE_PATH}" "${APP_ID}" "${BRANCH}"
 
